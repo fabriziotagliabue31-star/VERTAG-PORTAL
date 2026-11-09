@@ -149,6 +149,34 @@
   .empty{background:var(--surface);border:1px dashed #B9C3BE;border-radius:16px;padding:38px 24px;text-align:center;color:var(--muted)}
   .empty p{max-width:46ch;margin:0 auto 16px}
 
+  /* ---------- agenda ---------- */
+  .addtask{display:grid;grid-template-columns:minmax(0,1fr) 150px 130px 170px auto;gap:10px;align-items:end;padding:18px 20px;margin-bottom:24px}
+  .addtask label{margin:0 0 4px}
+  .grp{margin-bottom:22px}
+  .gh{font-size:18px;margin-bottom:10px;display:flex;align-items:baseline;gap:10px}
+  .gh span{font:500 14px var(--text);color:var(--muted)}
+  .gh.late{color:var(--bad)}
+  .task{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:8px}
+  .task .tbody{flex:1;min-width:0;cursor:pointer}
+  .task .ttl{font-weight:600;display:block;word-break:break-word}
+  .task .tdet{color:var(--muted);font-size:14px;margin-top:2px;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .task .tmeta{display:flex;flex-wrap:wrap;gap:3px 16px;align-items:center;color:var(--muted);font-size:14px;margin-top:4px}
+  .task .tmeta .late{color:var(--bad);font-weight:500}
+  .task.done .ttl{text-decoration:line-through;color:var(--muted);font-weight:400}
+  .tick{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid #9AA6A1;background:#fff;cursor:pointer;flex:none;margin:1px 0 0;padding:0}
+  .tick:hover{border-color:var(--done)}
+  .tick:checked{background:var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/75% no-repeat;border-color:var(--done)}
+  .editbox{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:16px 18px;margin-bottom:10px}
+  .danger{background:none;border:1px solid #E3B4B1;color:var(--bad);border-radius:9px;padding:9px 16px;cursor:pointer;font-weight:500}
+  .danger:hover{background:#FBEAE9}
+  .notes{columns:2 300px;column-gap:14px}
+  .note{break-inside:avoid;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;cursor:pointer}
+  .note:hover{border-color:var(--ink)}
+  .note h3{font:600 17px/1.3 var(--text);letter-spacing:0;margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .note .body{white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:9;-webkit-box-orient:vertical;overflow:hidden}
+  .note .nmeta{color:var(--muted);font-size:13px;margin-top:10px;display:flex;flex-wrap:wrap;gap:2px 14px}
+  .search{max-width:340px}
+
   /* ---------- acceso ---------- */
   .auth{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:100vh}
   .auth-brand{background:var(--ink);color:#fff;padding:48px clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:40px}
@@ -172,12 +200,14 @@
     .sidefoot{margin:0 0 0 auto;flex-direction:row;align-items:center;order:2}
     .sidefoot .me,.sidefoot a{display:none}
     .split{grid-template-columns:1fr}
+    .addtask{grid-template-columns:1fr 1fr}
+    .addtask .full{grid-column:1/-1}
     .proj{grid-template-columns:1fr}
     .auth{grid-template-columns:1fr}
     .auth-brand{padding:28px 24px;gap:24px}
     .auth-brand h1{max-width:none}
   }
-  @media(max-width:560px){.two{grid-template-columns:1fr} .tk{grid-template-columns:1fr} .tk .tags{justify-content:flex-start}}
+  @media(max-width:560px){.two{grid-template-columns:1fr} .tk{grid-template-columns:1fr} .tk .tags{justify-content:flex-start} .addtask{grid-template-columns:1fr}}
   @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -226,7 +256,10 @@ const S = {
   session: null, perfil: null, clienteNombre: '',
   proyectos: [], hitosAll: {}, tickets: [], clientes: {}, perfiles: {},
   view: 'proyectos', projectId: null, hitos: [], ticketId: null, comentarios: [],
-  showForm: false, formProyecto: '', soloActivos: true, passwordDone: false
+  showForm: false, formProyecto: '', soloActivos: true, passwordDone: false,
+  // agenda personal (solo administradores)
+  tareas: [], notas: [], agendaError: '', agTab: 'tareas', agInit: false,
+  mostrarHechas: false, editTarea: null, editNota: null, buscaNota: ''
 };
 const isAdmin = () => S.perfil?.rol === 'admin';
 const openCount = () => S.tickets.filter(t => !['resuelto','cerrado'].includes(t.estado)).length;
@@ -273,6 +306,8 @@ async function loadAll() {
     ]);
     S.clientes = Object.fromEntries((c.data || []).map(x => [x.id, x.nombre]));
     S.perfiles = Object.fromEntries((pf.data || []).map(x => [x.id, x]));
+    await loadAgenda();
+    if (!S.agInit) { S.view = 'agenda'; S.agInit = true; }   // el admin arranca en su agenda
   }
   render();
 }
@@ -339,6 +374,7 @@ function render() {
       <aside class="side">
         <div class="logo">${LOGO}<div><b>Vertag</b><small>Solutions</small></div></div>
         <nav class="navlist" aria-label="Secciones">
+          ${isAdmin() ? `<button class="navbtn ${S.view === 'agenda' ? 'on' : ''}" data-action="tab" data-v="agenda">Agenda${agVencen() ? `<span class="count">${agVencen()}</span>` : ''}</button>` : ''}
           <button class="navbtn ${S.view === 'proyectos' ? 'on' : ''}" data-action="tab" data-v="proyectos">Proyectos</button>
           <button class="navbtn ${S.view === 'tickets' ? 'on' : ''}" data-action="tab" data-v="tickets">Soporte${abiertos ? `<span class="count">${abiertos}</span>` : ''}</button>
         </nav>
@@ -348,7 +384,7 @@ function render() {
           <button data-action="logout">Salir</button>
         </div>
       </aside>
-      <main class="page">${S.view === 'proyectos' ? (S.projectId ? vProyecto() : vProyectos()) : (S.ticketId ? vTicket() : vTickets())}</main>
+      <main class="page">${vistaActual()}</main>
     </div>`;
 }
 
@@ -533,6 +569,234 @@ function vTicket() {
     </div>`;
 }
 
+/* ---------- agenda personal (solo administradores) ---------- */
+const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const fmtRel = d => {
+  if (!d) return 'Sin fecha';
+  if (d === todayStr()) return 'Hoy';
+  if (d === addDays(1)) return 'Mañana';
+  if (d === addDays(-1)) return 'Ayer';
+  const [, m, dd] = d.split('-'); return `${dd}/${m}`;
+};
+const PRIO_RANK = { urgente: 4, alta: 3, media: 2, baja: 1 };
+const agVencen = () => { const h = todayStr(); return S.tareas.filter(t => !t.hecha && t.fecha && t.fecha <= h).length; };
+const optsClientes = sel => `<option value="">Sin cliente</option>` +
+  Object.entries(S.clientes).sort((a, b) => a[1].localeCompare(b[1]))
+    .map(([id, n]) => `<option value="${esc(id)}" ${sel === id ? 'selected' : ''}>${esc(n)}</option>`).join('');
+const optsPrio = sel => Object.entries(L.prioridad)
+  .map(([k, v]) => `<option value="${k}" ${k === (sel || 'media') ? 'selected' : ''}>${v}</option>`).join('');
+
+function vistaActual() {
+  if (S.view === 'agenda' && isAdmin()) return vAgenda();
+  if (S.view === 'proyectos') return S.projectId ? vProyecto() : vProyectos();
+  return S.ticketId ? vTicket() : vTickets();
+}
+
+async function loadAgenda() {
+  const [ta, no] = await Promise.all([
+    sb.from('tareas').select('*').order('created_at', { ascending: false }),
+    sb.from('notas').select('*').order('updated_at', { ascending: false })
+  ]);
+  const err = ta.error || no.error;
+  S.agendaError = err ? err.message : '';
+  S.tareas = ta.data || []; S.notas = no.data || [];
+}
+
+function vAgenda() {
+  if (S.agendaError) return `
+    <div class="pagehead"><h1>Agenda</h1></div>
+    <div class="empty"><p>Falta crear las tablas de la agenda en Supabase. Corré el archivo <b>agenda.sql</b> en el SQL Editor y recargá esta página.</p>
+    <p style="font-size:13px">Detalle: ${esc(S.agendaError)}</p></div>`;
+  const hoy = todayStr();
+  const venc = S.tareas.filter(t => !t.hecha && t.fecha && t.fecha < hoy).length;
+  const hoyN = S.tareas.filter(t => !t.hecha && t.fecha === hoy).length;
+  const lead = (venc || hoyN)
+    ? `Tenés ${plural(hoyN, 'tarea para hoy', 'tareas para hoy')}${venc ? ` y ${plural(venc, 'atrasada', 'atrasadas')}` : ''}.`
+    : 'No tenés nada urgente para hoy.';
+  return `
+    <div class="pagehead"><h1>Agenda</h1><p class="lead">${lead}</p></div>
+    <div class="toolbar">
+      <div class="seg2" role="group" aria-label="Sección">
+        <button class="${S.agTab === 'tareas' ? 'on' : ''}" data-action="ag-tab" data-v="tareas">Tareas</button>
+        <button class="${S.agTab === 'notas' ? 'on' : ''}" data-action="ag-tab" data-v="notas">Notas</button>
+      </div>
+      ${S.agTab === 'notas' ? `<button class="btn" data-action="ag-new-nota">Nueva nota</button>` : ''}
+    </div>
+    ${S.agTab === 'tareas' ? vTareas() : vNotas()}`;
+}
+
+/* ----- tareas ----- */
+function vTareas() {
+  const hoy = todayStr(), en7 = addDays(7);
+  const cmp = (a, b) => (a.fecha || '9999-99-99').localeCompare(b.fecha || '9999-99-99') || (PRIO_RANK[b.prioridad] - PRIO_RANK[a.prioridad]);
+  const pend = S.tareas.filter(t => !t.hecha).sort(cmp);
+  const grupos = [
+    ['Atrasadas', pend.filter(t => t.fecha && t.fecha < hoy), true],
+    ['Hoy', pend.filter(t => t.fecha === hoy), false],
+    ['Próximos 7 días', pend.filter(t => t.fecha && t.fecha > hoy && t.fecha <= en7), false],
+    ['Más adelante y sin fecha', pend.filter(t => !t.fecha || t.fecha > en7), false]
+  ].filter(g => g[1].length);
+  const hechas = S.tareas.filter(t => t.hecha).sort((a, b) => (b.hecha_en || '').localeCompare(a.hecha_en || ''));
+  return `
+    <form class="panel addtask" data-form="ag-tarea-add">
+      <div class="full"><label for="nt">Nueva tarea</label><input id="nt" name="titulo" required maxlength="200" placeholder="Qué tenés que hacer" autocomplete="off"></div>
+      <div><label for="nf">Fecha</label><input id="nf" type="date" name="fecha"></div>
+      <div><label for="np">Prioridad</label><select id="np" name="prioridad">${optsPrio('media')}</select></div>
+      <div><label for="nc">Cliente</label><select id="nc" name="cliente_id">${optsClientes('')}</select></div>
+      <div class="full"><button class="btn">Agregar tarea</button></div>
+    </form>
+    ${grupos.length ? grupos.map(([t, arr, late]) => `
+      <section class="grp"><h2 class="gh ${late ? 'late' : ''}">${t}<span>${arr.length}</span></h2>${arr.map(rowTarea).join('')}</section>`).join('')
+      : `<div class="empty"><p>No tenés tareas pendientes. Agregá la primera arriba.</p></div>`}
+    ${hechas.length ? `<div class="grp"><button class="ghost" data-action="ag-hechas">${S.mostrarHechas ? 'Ocultar tareas hechas' : `Ver tareas hechas (${hechas.length})`}</button></div>` : ''}
+    ${S.mostrarHechas ? `<section class="grp"><h2 class="gh">Hechas<span>${hechas.length}</span></h2>${hechas.slice(0, 30).map(rowTarea).join('')}</section>` : ''}`;
+}
+
+function rowTarea(t) {
+  if (S.editTarea === t.id) return editTarea(t);
+  const late = !t.hecha && t.fecha && t.fecha < todayStr();
+  return `
+    <div class="task ${t.hecha ? 'done' : ''}">
+      <input type="checkbox" class="tick" data-action="ag-toggle" data-id="${esc(t.id)}" ${t.hecha ? 'checked' : ''} aria-label="Marcar como hecha: ${esc(t.titulo)}">
+      <div class="tbody" role="button" tabindex="0" data-action="ag-edit-tarea" data-id="${esc(t.id)}">
+        <span class="ttl">${esc(t.titulo)}</span>
+        ${t.detalle ? `<span class="tdet">${esc(t.detalle)}</span>` : ''}
+        <span class="tmeta">
+          ${t.fecha ? `<span class="${late ? 'late' : ''}">${fmtRel(t.fecha)}${late ? ', atrasada' : ''}</span>` : ''}
+          ${t.cliente_id && S.clientes[t.cliente_id] ? `<span>${esc(S.clientes[t.cliente_id])}</span>` : ''}
+          ${t.etiqueta ? `<span>${esc(t.etiqueta)}</span>` : ''}
+          ${['alta', 'urgente'].includes(t.prioridad) && !t.hecha ? tag(L.prioridad[t.prioridad], t.prioridad) : ''}
+        </span>
+      </div>
+    </div>`;
+}
+
+function editTarea(t) {
+  return `
+    <form class="editbox" data-form="ag-tarea-edit">
+      <label for="et" style="margin-top:0">Tarea</label><input id="et" name="titulo" required maxlength="200" value="${esc(t.titulo)}">
+      <label for="ed">Detalle</label><textarea id="ed" name="detalle" style="min-height:80px">${esc(t.detalle || '')}</textarea>
+      <div class="two">
+        <div><label for="ef">Fecha</label><input id="ef" type="date" name="fecha" value="${esc(t.fecha || '')}"></div>
+        <div><label for="ep">Prioridad</label><select id="ep" name="prioridad">${optsPrio(t.prioridad)}</select></div>
+      </div>
+      <div class="two">
+        <div><label for="ec">Cliente</label><select id="ec" name="cliente_id">${optsClientes(t.cliente_id || '')}</select></div>
+        <div><label for="eg">Etiqueta</label><input id="eg" name="etiqueta" maxlength="40" value="${esc(t.etiqueta || '')}" placeholder="Ej: Contenido, Top, Ventas"></div>
+      </div>
+      <div class="formrow">
+        <button type="button" class="danger" data-action="ag-del-tarea" data-id="${esc(t.id)}">Eliminar</button>
+        <span style="display:flex;gap:8px"><button type="button" class="ghost" data-action="ag-cancel">Cancelar</button><button class="btn">Guardar cambios</button></span>
+      </div>
+    </form>`;
+}
+
+/* ----- notas ----- */
+function notasFiltradas() {
+  const q = S.buscaNota.trim().toLowerCase();
+  return S.notas
+    .filter(n => !q || (n.titulo || '').toLowerCase().includes(q) || (n.contenido || '').toLowerCase().includes(q))
+    .sort((a, b) => (Number(b.fijada) - Number(a.fijada)) || (b.updated_at || '').localeCompare(a.updated_at || ''));
+}
+function gridNotas() {
+  const arr = notasFiltradas().filter(n => S.editNota !== n.id);
+  if (!arr.length && !S.editNota) {
+    return `<div class="empty"><p>${S.buscaNota ? 'No encontramos notas con esa búsqueda.' : 'Todavía no tenés notas. Guardá ideas, guiones o pendientes largos acá.'}</p></div>`;
+  }
+  return `<div class="notes">${arr.map(n => `
+    <article class="note" role="button" tabindex="0" data-action="ag-edit-nota" data-id="${esc(n.id)}">
+      <h3><span>${esc(n.titulo || 'Sin título')}</span>${n.fijada ? tag('Fijada', 'planificado') : ''}</h3>
+      <div class="body">${esc(n.contenido || '')}</div>
+      <div class="nmeta">${n.cliente_id && S.clientes[n.cliente_id] ? `<span>${esc(S.clientes[n.cliente_id])}</span>` : ''}<span>${fmtT(n.updated_at)}</span></div>
+    </article>`).join('')}</div>`;
+}
+function vNotas() {
+  return `
+    <div style="margin-bottom:16px"><input id="nsearch" class="search" type="search" placeholder="Buscar en tus notas" value="${esc(S.buscaNota)}" aria-label="Buscar en notas"></div>
+    ${S.editNota ? formNota() : ''}
+    <div id="notesgrid">${gridNotas()}</div>`;
+}
+function formNota() {
+  const n = S.editNota === 'new' ? {} : (S.notas.find(x => x.id === S.editNota) || {});
+  return `
+    <form class="editbox" data-form="ag-nota-save" style="margin-bottom:16px">
+      <label for="nn" style="margin-top:0">Título</label><input id="nn" name="titulo" maxlength="140" value="${esc(n.titulo || '')}" placeholder="Ej: Ideas de carruseles">
+      <label for="nb">Nota</label><textarea id="nb" name="contenido" style="min-height:180px">${esc(n.contenido || '')}</textarea>
+      <div class="two">
+        <div><label for="nl">Cliente</label><select id="nl" name="cliente_id">${optsClientes(n.cliente_id || '')}</select></div>
+        <div style="display:flex;align-items:end"><label class="chk2" style="margin-bottom:10px"><input type="checkbox" name="fijada" ${n.fijada ? 'checked' : ''}> Fijar arriba</label></div>
+      </div>
+      <div class="formrow">
+        ${n.id ? `<button type="button" class="danger" data-action="ag-del-nota" data-id="${esc(n.id)}">Eliminar</button>` : '<span></span>'}
+        <span style="display:flex;gap:8px"><button type="button" class="ghost" data-action="ag-cancel">Cancelar</button><button class="btn">Guardar nota</button></span>
+      </div>
+    </form>`;
+}
+document.addEventListener('input', e => {
+  if (e.target.id === 'nsearch') { S.buscaNota = e.target.value; $('#notesgrid').innerHTML = gridNotas(); }
+});
+
+/* ----- acciones de la agenda ----- */
+async function agClick(a, el) {
+  if (a === 'ag-toggle') return; // lo maneja "change"
+  const id = el.dataset.id;
+  if (a === 'ag-tab') { S.agTab = el.dataset.v; S.editTarea = null; S.editNota = null; render(); }
+  else if (a === 'ag-edit-tarea') { S.editTarea = id; render(); $('#et')?.focus(); }
+  else if (a === 'ag-cancel') { S.editTarea = null; S.editNota = null; render(); }
+  else if (a === 'ag-hechas') { S.mostrarHechas = !S.mostrarHechas; render(); }
+  else if (a === 'ag-new-nota') { S.editNota = 'new'; render(); $('#nn')?.focus(); }
+  else if (a === 'ag-edit-nota') { S.editNota = id; render(); window.scrollTo(0, 0); $('#nn')?.focus(); }
+  else if (a === 'ag-del-tarea') {
+    if (!confirm('¿Eliminar esta tarea? No se puede deshacer.')) return;
+    const { error } = await sb.from('tareas').delete().eq('id', id);
+    if (error) return toast(error.message, true);
+    S.editTarea = null; await loadAgenda(); render(); toast('Tarea eliminada');
+  }
+  else if (a === 'ag-del-nota') {
+    if (!confirm('¿Eliminar esta nota? No se puede deshacer.')) return;
+    const { error } = await sb.from('notas').delete().eq('id', id);
+    if (error) return toast(error.message, true);
+    S.editNota = null; await loadAgenda(); render(); toast('Nota eliminada');
+  }
+}
+async function agToggle(el) {
+  const { error } = await sb.from('tareas').update({ hecha: el.checked }).eq('id', el.dataset.id);
+  if (error) { toast(error.message, true); el.checked = !el.checked; return; }
+  await loadAgenda(); render();
+}
+async function agSubmit(kind, fd) {
+  const uid = S.session.user.id;
+  if (kind === 'ag-tarea-add') {
+    const row = {
+      owner_id: uid, titulo: fd.get('titulo').trim(), fecha: fd.get('fecha') || null,
+      prioridad: fd.get('prioridad'), cliente_id: fd.get('cliente_id') || null
+    };
+    const { error } = await sb.from('tareas').insert(row);
+    if (error) return toast(error.message, true);
+    await loadAgenda(); render(); $('#nt')?.focus(); toast('Tarea agregada');
+  }
+  else if (kind === 'ag-tarea-edit') {
+    const row = {
+      titulo: fd.get('titulo').trim(), detalle: fd.get('detalle').trim() || null,
+      fecha: fd.get('fecha') || null, prioridad: fd.get('prioridad'),
+      cliente_id: fd.get('cliente_id') || null, etiqueta: fd.get('etiqueta').trim() || null
+    };
+    const { error } = await sb.from('tareas').update(row).eq('id', S.editTarea);
+    if (error) return toast(error.message, true);
+    S.editTarea = null; await loadAgenda(); render(); toast('Tarea guardada');
+  }
+  else if (kind === 'ag-nota-save') {
+    const titulo = fd.get('titulo').trim(), contenido = fd.get('contenido').trim();
+    if (!titulo && !contenido) return toast('Escribí un título o el texto de la nota', true);
+    const row = { titulo: titulo || null, contenido: contenido || null, cliente_id: fd.get('cliente_id') || null, fijada: fd.get('fijada') === 'on' };
+    const { error } = S.editNota === 'new'
+      ? await sb.from('notas').insert({ ...row, owner_id: uid })
+      : await sb.from('notas').update(row).eq('id', S.editNota);
+    if (error) return toast(error.message, true);
+    S.editNota = null; await loadAgenda(); render(); toast('Nota guardada');
+  }
+}
+
 /* ---------- acciones ---------- */
 async function openProject(id) {
   S.projectId = id;
@@ -565,6 +829,7 @@ document.addEventListener('click', async e => {
   const a = el.dataset.action;
   if (a === 'toggle-hito' || a === 'set-estado') return; // se manejan en "change"
   if (a === 'logout') { await sb.auth.signOut(); }
+  else if (a.startsWith('ag-')) agClick(a, el);
   else if (a === 'tab') { S.view = el.dataset.v; S.projectId = null; S.ticketId = null; render(); }
   else if (a === 'open-project') openProject(el.dataset.id);
   else if (a === 'back-project') { S.projectId = null; render(); }
@@ -603,6 +868,7 @@ document.addEventListener('change', async e => {
     S.hitos = data || [];
     await refreshProyectos(); render(); toast('Etapa actualizada');
   }
+  else if (a === 'ag-toggle') agToggle(el);
 });
 
 document.addEventListener('submit', async e => {
@@ -645,6 +911,7 @@ document.addEventListener('submit', async e => {
       if (error) { toast(error.message, true); return; }
       await loadComentarios(); render(); toast('Mensaje enviado');
     }
+    else if (kind.startsWith('ag-')) { await agSubmit(kind, fd); }
   } finally { if (btn) btn.disabled = false; }
 });
 
