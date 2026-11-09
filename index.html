@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal de clientes · Vertag Solutions</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#131c2f; --panel2:#1a2540; --line:#243253;
+    --txt:#e8edf7; --muted:#8fa0c2; --accent:#3b82f6; --accent2:#22d3ee;
+    --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  a{color:var(--accent2)}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+  .brand{font-weight:700;letter-spacing:.3px}
+  .brand span{color:var(--accent2)}
+  .who{color:var(--muted);font-size:13px;text-align:right}
+  nav.tabs{display:flex;gap:6px;padding:12px 22px 0;max-width:1000px;margin:0 auto}
+  nav.tabs button{background:none;border:0;color:var(--muted);padding:9px 14px;border-radius:8px 8px 0 0;cursor:pointer;font-size:15px}
+  nav.tabs button.on{color:var(--txt);background:var(--panel);border:1px solid var(--line);border-bottom-color:var(--panel)}
+  main{max-width:1000px;margin:0 auto;padding:20px 22px 60px}
+  h1{font-size:22px;margin:4px 0 16px} h2{font-size:18px;margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card.click{cursor:pointer;transition:.15s} .card.click:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .muted{color:var(--muted);font-size:13px}
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);white-space:nowrap}
+  .b-en_curso,.b-en_progreso,.b-abierto{color:#93c5fd;border-color:#1e3a8a;background:#10224a}
+  .b-finalizado,.b-resuelto,.b-cerrado{color:#86efac;border-color:#14532d;background:#0e2a1a}
+  .b-en_pausa,.b-esperando_cliente,.b-media{color:#fcd34d;border-color:#78350f;background:#2b1d08}
+  .b-alta,.b-urgente{color:#fca5a5;border-color:#7f1d1d;background:#2d1010}
+  .bar{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  button.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer}
+  button.btn:hover{filter:brightness(1.1)} button.btn:disabled{opacity:.5;cursor:default}
+  button.ghost{background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px}
+  button.ghost:hover{border-color:var(--accent)}
+  button.link{background:none;border:0;color:var(--accent2);cursor:pointer;padding:0;font-size:14px}
+  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font:inherit}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  textarea{min-height:90px;resize:vertical}
+  input[type=checkbox]{width:auto}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.two{grid-template-columns:1fr} .who{display:none}}
+  .login{max-width:380px;margin:9vh auto;padding:0 18px}
+  .timeline{list-style:none;margin:0;padding:0}
+  .timeline li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .timeline li:last-child{border-bottom:0}
+  .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;margin-top:2px}
+  .dot.done{background:var(--ok);border-color:var(--ok);color:#052e14}
+  .dot.late{border-color:var(--bad)}
+  .late-t{color:#fca5a5}
+  .msg{padding:10px 12px;border-radius:10px;background:var(--panel2);margin:8px 0;white-space:pre-wrap;word-break:break-word}
+  .msg.mine{background:#12306b}
+  .msg.internal{background:#2b1d08;border:1px dashed #78350f}
+  .msg small{display:block;color:var(--muted);margin-bottom:3px}
+  .pre{white-space:pre-wrap;word-break:break-word}
+  .empty{text-align:center;color:var(--muted);padding:34px 10px}
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 18px;border-radius:10px;display:none;z-index:20}
+  #toast.err{border-color:var(--bad)} #toast.show{display:block}
+  footer{max-width:1000px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:13px}
+  .spacer{height:14px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =====================================================================
+   CONFIGURACIÓN: reemplazá estos dos valores (Supabase > Project Settings > API)
+   Usá la clave "anon / public". NUNCA pongas la "service_role" acá.
+   ===================================================================== */
+const SUPABASE_URL      = 'https://krvwdjzhknoulekvbdgb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_0Tj2xN2sc63998srKWfJiw_a6DnzfAm';
+const WHATSAPP_VERTAG   = '5493764380293';
+
+/* ---------- utilidades ---------- */
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $  = (s, r = document) => r.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtD = d => { if (!d) return '—'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; };
+const fmtT = t => new Date(t).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+const todayStr = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; };
+function toast(msg, err = false) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err ? ' err' : '');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.className = '', 3500);
+}
+
+const L = {
+  proyecto: { planificado:'Planificado', en_curso:'En curso', en_pausa:'En pausa', finalizado:'Finalizado' },
+  ticket:   { abierto:'Abierto', en_progreso:'En progreso', esperando_cliente:'Esperando cliente', resuelto:'Resuelto', cerrado:'Cerrado' },
+  tipo:     { mantenimiento:'Mantenimiento', mejora:'Mejora', error:'Error', consulta:'Consulta' },
+  prioridad:{ baja:'Baja', media:'Media', alta:'Alta', urgente:'Urgente' }
+};
+const badge = (txt, cls) => `<span class="badge b-${esc(cls)}">${esc(txt)}</span>`;
+
+/* ---------- estado ---------- */
+// Si el usuario llega desde un mail de invitación o de recuperación, hay que pedirle que cree su contraseña.
+const NEEDS_PASSWORD = /type=(invite|recovery)/.test(location.hash);
+const S = {
+  session: null, perfil: null, clienteNombre: '',
+  proyectos: [], tickets: [], clientes: {}, perfiles: {},
+  view: 'proyectos', projectId: null, hitos: [], ticketId: null, comentarios: [],
+  showForm: false, formProyecto: '', soloActivos: true, passwordDone: false
+};
+const isAdmin = () => S.perfil?.rol === 'admin';
+
+/* ---------- arranque ---------- */
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  S.session = session;
+  if (!session) return renderLogin();
+  if (NEEDS_PASSWORD && !S.passwordDone) return renderSetPassword();
+  await loadAll();
+}
+sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') { S.session = null; S.perfil = null; renderLogin(); } });
+
+async function loadAll() {
+  const uid = S.session.user.id;
+  const { data: perfil, error } = await sb.from('perfiles').select('id,rol,nombre,email,cliente_id').eq('id', uid).single();
+  if (error || !perfil) { toast('No se pudo cargar tu perfil', true); return renderLogin(); }
+  S.perfil = perfil;
+  if (!isAdmin() && !perfil.cliente_id) return renderSinCliente();
+
+  if (perfil.cliente_id) {
+    const { data: c } = await sb.from('clientes').select('nombre').eq('id', perfil.cliente_id).maybeSingle();
+    S.clienteNombre = c?.nombre || '';
+  }
+  const [p, t] = await Promise.all([
+    sb.from('v_proyectos_resumen').select('*').order('updated_at', { ascending: false }),
+    sb.from('tickets').select('*, proyectos(nombre)').order('created_at', { ascending: false })
+  ]);
+  if (p.error || t.error) toast((p.error || t.error).message, true);
+  S.proyectos = p.data || []; S.tickets = t.data || [];
+
+  if (isAdmin()) {
+    const [c, pf] = await Promise.all([
+      sb.from('clientes').select('id,nombre'),
+      sb.from('perfiles').select('id,nombre,email,rol')
+    ]);
+    S.clientes = Object.fromEntries((c.data || []).map(x => [x.id, x.nombre]));
+    S.perfiles = Object.fromEntries((pf.data || []).map(x => [x.id, x]));
+  }
+  render();
+}
+
+/* ---------- pantallas de acceso ---------- */
+function shell(inner) { $('#app').innerHTML = `<div class="login">${inner}</div>`; }
+
+function renderLogin() {
+  shell(`
+    <div class="brand" style="font-size:24px;margin-bottom:6px">VERTAG <span>Solutions</span></div>
+    <p class="muted" style="margin-top:0">Portal de clientes</p>
+    <form class="card" data-form="login">
+      <label>Email</label><input type="email" name="email" required autocomplete="username">
+      <label>Contraseña</label><input type="password" name="password" required autocomplete="current-password">
+      <div class="spacer"></div>
+      <button class="btn" style="width:100%">Ingresar</button>
+      <p style="text-align:center;margin:12px 0 0"><button type="button" class="link" data-action="reset">Olvidé mi contraseña</button></p>
+    </form>`);
+}
+
+function renderSetPassword() {
+  shell(`
+    <div class="brand" style="font-size:24px;margin-bottom:6px">VERTAG <span>Solutions</span></div>
+    <p class="muted" style="margin-top:0">Creá tu contraseña para entrar al portal</p>
+    <form class="card" data-form="setpass">
+      <label>Nueva contraseña (mínimo 8 caracteres)</label>
+      <input type="password" name="p1" minlength="8" required autocomplete="new-password">
+      <label>Repetila</label>
+      <input type="password" name="p2" minlength="8" required autocomplete="new-password">
+      <div class="spacer"></div>
+      <button class="btn" style="width:100%">Guardar y entrar</button>
+    </form>`);
+}
+
+function renderSinCliente() {
+  shell(`
+    <div class="card">
+      <h2>Tu cuenta está casi lista</h2>
+      <p class="muted">Todavía no está vinculada a una empresa. Escribinos y la activamos.</p>
+      <p><a href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Contactar por WhatsApp</a></p>
+      <button class="ghost" data-action="logout">Cerrar sesión</button>
+    </div>`);
+}
+
+/* ---------- render principal ---------- */
+function render() {
+  const nombre = S.perfil.nombre || S.perfil.email || '';
+  const empresa = isAdmin() ? 'Administrador Vertag' : S.clienteNombre;
+  $('#app').innerHTML = `
+    <header class="top">
+      <div class="brand">VERTAG <span>Solutions</span></div>
+      <div class="row">
+        <div class="who">${esc(nombre)}<br>${esc(empresa)}</div>
+        <button class="ghost" data-action="logout">Salir</button>
+      </div>
+    </header>
+    <nav class="tabs">
+      <button class="${S.view === 'proyectos' ? 'on' : ''}" data-action="tab" data-v="proyectos">Proyectos</button>
+      <button class="${S.view === 'tickets' ? 'on' : ''}" data-action="tab" data-v="tickets">Soporte${openCount() ? ` (${openCount()})` : ''}</button>
+    </nav>
+    <main>${S.view === 'proyectos' ? (S.projectId ? vProyecto() : vProyectos()) : (S.ticketId ? vTicket() : vTickets())}</main>
+    <footer>¿Necesitás algo urgente? <a href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Escribinos por WhatsApp</a></footer>`;
+}
+const openCount = () => S.tickets.filter(t => !['resuelto','cerrado'].includes(t.estado)).length;
+
+/* ---------- proyectos ---------- */
+function vProyectos() {
+  if (!S.proyectos.length) return `<h1>Proyectos</h1><div class="card empty">Todavía no hay proyectos cargados.</div>`;
+  return `<h1>Proyectos</h1><div class="grid">${S.proyectos.map(p => `
+    <div class="card click" data-action="open-project" data-id="${esc(p.id)}">
+      <div class="row"><strong>${esc(p.nombre)}</strong>${badge(L.proyecto[p.estado], p.estado)}</div>
+      ${isAdmin() ? `<div class="muted">${esc(S.clientes[p.cliente_id] || '')}</div>` : ''}
+      <div class="bar"><i style="width:${Number(p.avance) || 0}%"></i></div>
+      <div class="row muted"><span>${Number(p.avance) || 0}% completado</span><span>${p.hitos_completados}/${p.hitos_total} hitos</span></div>
+      <div class="muted" style="margin-top:8px">Próximo hito: ${fmtD(p.proximo_hito_fecha)}</div>
+    </div>`).join('')}</div>`;
+}
+
+function vProyecto() {
+  const p = S.proyectos.find(x => x.id === S.projectId);
+  if (!p) return '';
+  const hoy = todayStr();
+  return `
+    <button class="link" data-action="back-project">← Volver a proyectos</button>
+    <div class="spacer"></div>
+    <div class="card">
+      <div class="row"><h1 style="margin:0">${esc(p.nombre)}</h1>${badge(L.proyecto[p.estado], p.estado)}</div>
+      ${isAdmin() ? `<div class="muted">${esc(S.clientes[p.cliente_id] || '')}</div>` : ''}
+      ${p.descripcion ? `<p class="pre">${esc(p.descripcion)}</p>` : ''}
+      <div class="bar"><i style="width:${Number(p.avance) || 0}%"></i></div>
+      <div class="row muted">
+        <span>${Number(p.avance) || 0}% completado · ${p.hitos_completados}/${p.hitos_total} hitos</span>
+        <span>Fin estimado: ${fmtD(p.fecha_fin_estimada)}</span>
+      </div>
+      ${!isAdmin() ? `<div class="spacer"></div><button class="ghost" data-action="ticket-from-project" data-id="${esc(p.id)}">Solicitar soporte sobre este proyecto</button>` : ''}
+    </div>
+    <div class="spacer"></div>
+    <div class="card">
+      <h2>Avance por etapas</h2>
+      ${S.hitos.length ? `<ul class="timeline">${S.hitos.map(h => {
+        const late = !h.completado && h.fecha_objetivo && h.fecha_objetivo < hoy;
+        return `<li>
+          <div class="dot ${h.completado ? 'done' : late ? 'late' : ''}">${h.completado ? '✓' : ''}</div>
+          <div style="flex:1">
+            <div class="row"><strong>${esc(h.nombre)}</strong>
+              ${isAdmin() ? `<label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--txt)"><input type="checkbox" data-action="toggle-hito" data-id="${esc(h.id)}" ${h.completado ? 'checked' : ''}> Completado</label>` : ''}
+            </div>
+            ${h.descripcion ? `<div class="muted pre">${esc(h.descripcion)}</div>` : ''}
+            <div class="muted ${late ? 'late-t' : ''}">${h.completado ? 'Completado el ' + fmtT(h.completado_en) : 'Objetivo: ' + fmtD(h.fecha_objetivo) + (late ? ' (vencido)' : '')}</div>
+          </div></li>`;
+      }).join('')}</ul>` : `<div class="empty">Este proyecto todavía no tiene etapas cargadas.</div>`}
+    </div>`;
+}
+
+/* ---------- soporte ---------- */
+function vTickets() {
+  const lista = S.tickets.filter(t => !S.soloActivos || !['resuelto','cerrado'].includes(t.estado));
+  return `
+    <div class="row"><h1 style="margin:0">Soporte y mantenimiento</h1>
+      <div class="row">
+        <select data-action="filtro" style="width:auto">
+          <option value="1" ${S.soloActivos ? 'selected' : ''}>Solo activos</option>
+          <option value="0" ${!S.soloActivos ? 'selected' : ''}>Todos</option>
+        </select>
+        ${!isAdmin() ? `<button class="btn" data-action="toggle-form">${S.showForm ? 'Cancelar' : '+ Nueva solicitud'}</button>` : ''}
+      </div>
+    </div>
+    <div class="spacer"></div>
+    ${S.showForm && !isAdmin() ? formTicket() : ''}
+    ${lista.length ? lista.map(t => `
+      <div class="card click" style="margin-bottom:10px" data-action="open-ticket" data-id="${esc(t.id)}">
+        <div class="row"><strong>${esc(t.titulo)}</strong>
+          <span>${badge(L.ticket[t.estado], t.estado)} ${badge(L.prioridad[t.prioridad], t.prioridad)}</span></div>
+        <div class="muted">${isAdmin() ? esc(S.clientes[t.cliente_id] || '') + ' · ' : ''}${esc(L.tipo[t.tipo])}${t.proyectos?.nombre ? ' · ' + esc(t.proyectos.nombre) : ''} · ${fmtT(t.created_at)}</div>
+      </div>`).join('') : `<div class="card empty">No hay solicitudes ${S.soloActivos ? 'activas' : ''}.</div>`}`;
+}
+
+function formTicket() {
+  return `
+    <form class="card" data-form="ticket" style="margin-bottom:16px">
+      <h2>Nueva solicitud</h2>
+      <label>Título</label><input name="titulo" maxlength="140" required placeholder="Ej: No puedo cargar un alumno nuevo">
+      <div class="two">
+        <div><label>Tipo</label><select name="tipo">${Object.entries(L.tipo).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select></div>
+        <div><label>Prioridad</label><select name="prioridad">${Object.entries(L.prioridad).map(([k,v]) => `<option value="${k}" ${k==='media'?'selected':''}>${v}</option>`).join('')}</select></div>
+      </div>
+      <label>Proyecto (opcional)</label>
+      <select name="proyecto_id"><option value="">— General —</option>
+        ${S.proyectos.map(p => `<option value="${esc(p.id)}" ${S.formProyecto === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}
+      </select>
+      <label>Descripción</label><textarea name="descripcion" placeholder="Contanos qué pasa o qué necesitás, con el mayor detalle posible"></textarea>
+      <div class="spacer"></div>
+      <button class="btn">Enviar solicitud</button>
+    </form>`;
+}
+
+function vTicket() {
+  const t = S.tickets.find(x => x.id === S.ticketId);
+  if (!t) return '';
+  const quien = id => {
+    if (id === S.session.user.id) return isAdmin() ? 'Vertag (vos)' : 'Vos';
+    if (isAdmin()) { const p = S.perfiles[id]; return p ? `${p.nombre || p.email}${p.rol === 'admin' ? ' (Vertag)' : ''}` : 'Cliente'; }
+    return 'Vertag';
+  };
+  return `
+    <button class="link" data-action="back-ticket">← Volver a soporte</button>
+    <div class="spacer"></div>
+    <div class="card">
+      <div class="row"><h1 style="margin:0">${esc(t.titulo)}</h1>
+        <span>${badge(L.ticket[t.estado], t.estado)} ${badge(L.prioridad[t.prioridad], t.prioridad)}</span></div>
+      <div class="muted">${isAdmin() ? esc(S.clientes[t.cliente_id] || '') + ' · ' : ''}${esc(L.tipo[t.tipo])}${t.proyectos?.nombre ? ' · ' + esc(t.proyectos.nombre) : ''} · ${fmtT(t.created_at)}</div>
+      ${t.descripcion ? `<p class="pre">${esc(t.descripcion)}</p>` : ''}
+      ${isAdmin() ? `<label>Estado</label>
+        <select data-action="set-estado" data-id="${esc(t.id)}" style="max-width:240px">
+          ${Object.entries(L.ticket).map(([k,v]) => `<option value="${k}" ${t.estado === k ? 'selected' : ''}>${v}</option>`).join('')}
+        </select>` : ''}
+    </div>
+    <div class="spacer"></div>
+    <div class="card">
+      <h2>Conversación</h2>
+      ${S.comentarios.length ? S.comentarios.map(c => `
+        <div class="msg ${c.interno ? 'internal' : c.autor_id === S.session.user.id ? 'mine' : ''}">
+          <small>${esc(quien(c.autor_id))}${c.interno ? ' · NOTA INTERNA' : ''} · ${fmtT(c.created_at)}</small>${esc(c.mensaje)}
+        </div>`).join('') : `<div class="muted">Todavía no hay mensajes.</div>`}
+      ${['cerrado'].includes(t.estado) && !isAdmin() ? `<p class="muted">Esta solicitud está cerrada. Si necesitás algo más, creá una nueva.</p>` : `
+      <form data-form="comment" style="margin-top:12px">
+        <textarea name="mensaje" required placeholder="Escribir un mensaje…" style="min-height:70px"></textarea>
+        <div class="row" style="margin-top:8px">
+          ${isAdmin() ? `<label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--txt)"><input type="checkbox" name="interno"> Nota interna (el cliente no la ve)</label>` : '<span></span>'}
+          <button class="btn">Enviar</button>
+        </div>
+      </form>`}
+    </div>`;
+}
+
+/* ---------- acciones ---------- */
+async function openProject(id) {
+  S.projectId = id;
+  const { data, error } = await sb.from('hitos').select('*').eq('proyecto_id', id).order('orden');
+  if (error) toast(error.message, true);
+  S.hitos = data || []; render();
+}
+async function openTicket(id) {
+  S.ticketId = id; await loadComentarios(); render();
+}
+async function loadComentarios() {
+  const { data, error } = await sb.from('ticket_comentarios').select('*').eq('ticket_id', S.ticketId).order('created_at');
+  if (error) toast(error.message, true);
+  S.comentarios = data || [];
+}
+async function refreshProyectos() {
+  const { data } = await sb.from('v_proyectos_resumen').select('*').order('updated_at', { ascending: false });
+  S.proyectos = data || [];
+}
+async function refreshTickets() {
+  const { data } = await sb.from('tickets').select('*, proyectos(nombre)').order('created_at', { ascending: false });
+  S.tickets = data || [];
+}
+
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const a = el.dataset.action;
+  if (a === 'logout') { await sb.auth.signOut(); }
+  else if (a === 'tab') { S.view = el.dataset.v; S.projectId = null; S.ticketId = null; render(); }
+  else if (a === 'open-project') openProject(el.dataset.id);
+  else if (a === 'back-project') { S.projectId = null; render(); }
+  else if (a === 'open-ticket') openTicket(el.dataset.id);
+  else if (a === 'back-ticket') { S.ticketId = null; render(); }
+  else if (a === 'toggle-form') { S.showForm = !S.showForm; S.formProyecto = ''; render(); }
+  else if (a === 'ticket-from-project') { S.view = 'tickets'; S.ticketId = null; S.showForm = true; S.formProyecto = el.dataset.id; render(); }
+  else if (a === 'reset') {
+    const email = prompt('Escribí tu email y te mandamos un link para crear una nueva contraseña:');
+    if (!email) return;
+    const { error } = await sb.auth.resetPasswordForEmail(email.trim(), { redirectTo: location.origin + location.pathname });
+    toast(error ? error.message : 'Listo. Revisá tu correo.', !!error);
+  }
+});
+
+document.addEventListener('change', async e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  const a = el.dataset.action;
+  if (a === 'filtro') { S.soloActivos = el.value === '1'; render(); }
+  else if (a === 'set-estado') {
+    const { error } = await sb.from('tickets').update({ estado: el.value }).eq('id', el.dataset.id);
+    if (error) return toast(error.message, true);
+    await refreshTickets(); render(); toast('Estado actualizado');
+  }
+  else if (a === 'toggle-hito') {
+    const { error } = await sb.from('hitos').update({ completado: el.checked }).eq('id', el.dataset.id);
+    if (error) { toast(error.message, true); el.checked = !el.checked; return; }
+    await Promise.all([openProjectHitosOnly(), refreshProyectos()]); render(); toast('Etapa actualizada');
+  }
+});
+async function openProjectHitosOnly() {
+  const { data } = await sb.from('hitos').select('*').eq('proyecto_id', S.projectId).order('orden');
+  S.hitos = data || [];
+}
+
+document.addEventListener('submit', async e => {
+  const f = e.target.closest('[data-form]'); if (!f) return;
+  e.preventDefault();
+  const btn = f.querySelector('button.btn, button:not([type])'); if (btn) btn.disabled = true;
+  const fd = new FormData(f);
+  try {
+    const kind = f.dataset.form;
+    if (kind === 'login') {
+      const { error } = await sb.auth.signInWithPassword({ email: fd.get('email').trim(), password: fd.get('password') });
+      if (error) { toast('Email o contraseña incorrectos', true); return; }
+      S.session = (await sb.auth.getSession()).data.session; await loadAll();
+    }
+    else if (kind === 'setpass') {
+      if (fd.get('p1') !== fd.get('p2')) { toast('Las contraseñas no coinciden', true); return; }
+      const { error } = await sb.auth.updateUser({ password: fd.get('p1') });
+      if (error) { toast(error.message, true); return; }
+      S.passwordDone = true; history.replaceState(null, '', location.pathname);
+      toast('Contraseña creada'); await loadAll();
+    }
+    else if (kind === 'ticket') {
+      const row = {
+        cliente_id: S.perfil.cliente_id, creado_por: S.session.user.id, estado: 'abierto',
+        tipo: fd.get('tipo'), prioridad: fd.get('prioridad'),
+        titulo: fd.get('titulo').trim(), descripcion: fd.get('descripcion').trim() || null,
+        proyecto_id: fd.get('proyecto_id') || null
+      };
+      const { error } = await sb.from('tickets').insert(row);
+      if (error) { toast(error.message, true); return; }
+      S.showForm = false; S.formProyecto = ''; await refreshTickets(); render();
+      toast('Solicitud enviada. Te vamos a responder a la brevedad.');
+    }
+    else if (kind === 'comment') {
+      const row = {
+        ticket_id: S.ticketId, autor_id: S.session.user.id,
+        mensaje: fd.get('mensaje').trim(), interno: isAdmin() && fd.get('interno') === 'on'
+      };
+      const { error } = await sb.from('ticket_comentarios').insert(row);
+      if (error) { toast(error.message, true); return; }
+      await loadComentarios(); render();
+    }
+  } finally { if (btn) btn.disabled = false; }
+});
+
+boot();
+</script>
+</body>
+</html>
