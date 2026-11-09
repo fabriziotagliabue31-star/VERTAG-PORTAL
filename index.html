@@ -177,6 +177,53 @@
   .note .nmeta{color:var(--muted);font-size:13px;margin-top:10px;display:flex;flex-wrap:wrap;gap:2px 14px}
   .search{max-width:340px}
 
+  /* ---------- calendario ---------- */
+  .page.wide{max-width:none}
+  .calbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .calbar h2{font-size:28px;margin-right:auto}
+  .calnav{display:inline-flex;gap:6px}
+  .calnav .ghost{min-width:42px;padding:8px 14px;font-size:16px}
+  .calwrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+  .calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .calhead{padding:10px 12px;font-weight:600;font-size:14px;color:var(--muted);background:var(--soft);border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+  .calhead:nth-child(7){border-right:0}
+  .cal-cell{min-height:calc((100vh - 290px) / 5);min-height:max(128px,calc((100vh - 290px) / 5));padding:7px 8px 8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;gap:5px;min-width:0}
+  .cal-cell:nth-child(7n){border-right:0}
+  .cal-cell.lr{border-bottom:0}
+  .cal-cell:hover{background:#FAFBFA}
+  .cal-cell.off{background:#F6F8F7}
+  .cal-cell.off .dnum{color:#9AA6A1}
+  .cal-cell.sel{outline:2px solid var(--accent);outline-offset:-2px}
+  .dnum{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;background:none;border:0;cursor:pointer;color:var(--ink);align-self:flex-start;padding:0}
+  .cal-cell.today .dnum{background:var(--accent);color:#fff}
+  .chips{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .chip{display:block;width:100%;text-align:left;border:0;border-radius:6px;padding:3px 7px;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:#E3EDF9;color:#12407A}
+  .chip.p-alta{background:#FDEBD8;color:#8A3B00}
+  .chip.p-urgente{background:#FADADA;color:#8F1D17}
+  .chip.done{background:#E8EDEB;color:#6B7871;text-decoration:line-through}
+  .chip.hito{background:none;border:1px dashed #7BB89F;color:#0B6B49;padding:2px 6px}
+  .chip.hito.done{color:#6B7871;border-color:#B9C3BE}
+  .chip[draggable=true]{cursor:grab}
+  .more{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;text-align:left;padding:0 7px}
+  .daypanel{position:sticky;top:20px}
+  .daypanel h2{margin-bottom:14px}
+  .daypanel .two{grid-template-columns:1fr}
+  .daypanel .task{padding:11px 12px}
+  .hitoitem{display:flex;flex-direction:column;border:1px dashed #7BB89F;border-radius:10px;padding:9px 12px;margin-bottom:8px;color:#0B6B49}
+  .hitoitem small{color:var(--muted)}
+  .hitoitem.done{color:var(--muted);border-color:#B9C3BE}
+  .dayadd{margin-top:16px;padding-top:6px;border-top:1px solid var(--line)}
+  .daypanel .none{color:var(--muted);margin-bottom:10px}
+  @media(max-width:1100px){.calwrap{grid-template-columns:1fr}.daypanel{position:static}}
+  @media(max-width:700px){
+    .cal-cell{min-height:70px;padding:4px}
+    .chips{flex-direction:row;flex-wrap:wrap}
+    .chip{width:9px;height:9px;padding:0;font-size:0;border-radius:50%}
+    .chip.hito{padding:0}
+    .calhead{padding:8px 4px;text-align:center;font-size:12px}
+    .calbar h2{font-size:22px}
+  }
+
   /* ---------- acceso ---------- */
   .auth{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:100vh}
   .auth-brand{background:var(--ink);color:#fff;padding:48px clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:40px}
@@ -259,7 +306,8 @@ const S = {
   showForm: false, formProyecto: '', soloActivos: true, passwordDone: false,
   // agenda personal (solo administradores)
   tareas: [], notas: [], agendaError: '', agTab: 'tareas', agInit: false,
-  mostrarHechas: false, editTarea: null, editNota: null, buscaNota: ''
+  mostrarHechas: false, editTarea: null, editNota: null, buscaNota: '',
+  calMes: { y: new Date().getFullYear(), m: new Date().getMonth() }, calDia: null
 };
 const isAdmin = () => S.perfil?.rol === 'admin';
 const openCount = () => S.tickets.filter(t => !['resuelto','cerrado'].includes(t.estado)).length;
@@ -384,7 +432,7 @@ function render() {
           <button data-action="logout">Salir</button>
         </div>
       </aside>
-      <main class="page">${vistaActual()}</main>
+      <main class="page ${S.view === 'agenda' && S.agTab === 'cal' && isAdmin() ? 'wide' : ''}">${vistaActual()}</main>
     </div>`;
 }
 
@@ -618,11 +666,12 @@ function vAgenda() {
     <div class="toolbar">
       <div class="seg2" role="group" aria-label="Sección">
         <button class="${S.agTab === 'tareas' ? 'on' : ''}" data-action="ag-tab" data-v="tareas">Tareas</button>
+        <button class="${S.agTab === 'cal' ? 'on' : ''}" data-action="ag-tab" data-v="cal">Calendario</button>
         <button class="${S.agTab === 'notas' ? 'on' : ''}" data-action="ag-tab" data-v="notas">Notas</button>
       </div>
       ${S.agTab === 'notas' ? `<button class="btn" data-action="ag-new-nota">Nueva nota</button>` : ''}
     </div>
-    ${S.agTab === 'tareas' ? vTareas() : vNotas()}`;
+    ${S.agTab === 'tareas' ? vTareas() : S.agTab === 'cal' ? vCalendario() : vNotas()}`;
 }
 
 /* ----- tareas ----- */
@@ -691,6 +740,102 @@ function editTarea(t) {
     </form>`;
 }
 
+/* ----- calendario ----- */
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const ordenTareas = (a, b) => (Number(a.hecha) - Number(b.hecha)) || (PRIO_RANK[b.prioridad] - PRIO_RANK[a.prioridad]);
+
+// Tareas por fecha y etapas de proyectos por fecha objetivo
+function calData() {
+  const tb = {}, hb = {};
+  S.tareas.forEach(t => { if (t.fecha) (tb[t.fecha] ||= []).push(t); });
+  const pn = Object.fromEntries(S.proyectos.map(p => [p.id, p.nombre]));
+  Object.values(S.hitosAll).flat().forEach(h => {
+    if (h.fecha_objetivo) (hb[h.fecha_objetivo] ||= []).push({ ...h, proyecto: pn[h.proyecto_id] || '' });
+  });
+  return { tb, hb };
+}
+
+function vCalendario() {
+  const { y, m } = S.calMes;
+  const hoy = todayStr(), dia = S.calDia || hoy;
+  const { tb, hb } = calData();
+  const first = new Date(y, m, 1);
+  const dow = (first.getDay() + 6) % 7;               // la semana arranca el lunes
+  const dim = new Date(y, m + 1, 0).getDate();
+  const total = Math.ceil((dow + dim) / 7) * 7;
+  const titulo = cap(first.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }));
+  let cells = '';
+  for (let i = 0; i < total; i++) {
+    const d = new Date(y, m, 1 - dow + i), s = ymd(d);
+    const ts = (tb[s] || []).slice().sort(ordenTareas);
+    const hs = hb[s] || [];
+    const items = [
+      ...ts.map(t => `<button class="chip p-${esc(t.prioridad)} ${t.hecha ? 'done' : ''}" draggable="true" data-drag="${esc(t.id)}" data-action="ag-cal-chip" data-id="${esc(t.id)}" data-d="${s}" title="${esc(t.titulo)}">${esc(t.titulo)}</button>`),
+      ...hs.map(h => `<button class="chip hito ${h.completado ? 'done' : ''}" data-action="ag-cal-dia" data-d="${s}" title="${esc('Etapa: ' + h.nombre + (h.proyecto ? ' (' + h.proyecto + ')' : ''))}">Etapa: ${esc(h.nombre)}</button>`)
+    ];
+    cells += `
+      <div class="cal-cell ${d.getMonth() !== m ? 'off' : ''} ${s === hoy ? 'today' : ''} ${s === dia ? 'sel' : ''} ${i >= total - 7 ? 'lr' : ''}" data-action="ag-cal-dia" data-drop="${s}" data-d="${s}">
+        <button class="dnum" data-action="ag-cal-dia" data-d="${s}" aria-label="${esc(d.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' }))}">${d.getDate()}</button>
+        <div class="chips">${items.slice(0, 3).join('')}${items.length > 3 ? `<button class="more" data-action="ag-cal-dia" data-d="${s}">+${items.length - 3} más</button>` : ''}</div>
+      </div>`;
+  }
+  return `
+    <div class="calbar">
+      <h2>${esc(titulo)}</h2>
+      <div class="calnav">
+        <button class="ghost" data-action="ag-cal-hoy">Hoy</button>
+        <button class="ghost" data-action="ag-cal-prev" aria-label="Mes anterior">‹</button>
+        <button class="ghost" data-action="ag-cal-next" aria-label="Mes siguiente">›</button>
+      </div>
+    </div>
+    <div class="calwrap">
+      <div class="calgrid" aria-label="Calendario de ${esc(titulo)}">${DIAS.map(n => `<div class="calhead">${n}</div>`).join('')}${cells}</div>
+      ${vDiaPanel(dia, tb, hb)}
+    </div>`;
+}
+
+function vDiaPanel(d, tb, hb) {
+  const [y, m, dd] = d.split('-').map(Number);
+  const titulo = cap(new Date(y, m - 1, dd).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' }));
+  const ts = (tb[d] || []).slice().sort(ordenTareas);
+  const hs = hb[d] || [];
+  return `
+    <aside class="panel daypanel">
+      <h2>${esc(titulo)}</h2>
+      ${hs.map(h => `<div class="hitoitem ${h.completado ? 'done' : ''}"><span>Etapa: <b>${esc(h.nombre)}</b>${h.completado ? ' (completada)' : ''}</span><small>${esc(h.proyecto)}</small></div>`).join('')}
+      ${ts.length ? ts.map(rowTarea).join('') : (hs.length ? '' : `<p class="none">No hay nada agendado este día.</p>`)}
+      <form class="dayadd" data-form="ag-tarea-add">
+        <input type="hidden" name="fecha" value="${esc(d)}">
+        <label for="dt">Agregar tarea para este día</label>
+        <input id="dt" name="titulo" required maxlength="200" placeholder="Qué tenés que hacer" autocomplete="off">
+        <div class="two">
+          <div><label for="dp">Prioridad</label><select id="dp" name="prioridad">${optsPrio('media')}</select></div>
+          <div><label for="dc">Cliente</label><select id="dc" name="cliente_id">${optsClientes('')}</select></div>
+        </div>
+        <div class="formrow"><button class="btn block">Agregar tarea</button></div>
+      </form>
+    </aside>`;
+}
+
+// Arrastrar una tarea a otro día del calendario para reprogramarla
+document.addEventListener('dragstart', e => {
+  const c = e.target.closest?.('[data-drag]'); if (!c) return;
+  e.dataTransfer.setData('text/plain', c.dataset.drag); e.dataTransfer.effectAllowed = 'move';
+});
+document.addEventListener('dragover', e => { if (e.target.closest?.('[data-drop]')) e.preventDefault(); });
+document.addEventListener('drop', async e => {
+  const cell = e.target.closest?.('[data-drop]'); if (!cell) return;
+  e.preventDefault();
+  const t = S.tareas.find(x => x.id === e.dataTransfer.getData('text/plain'));
+  const nueva = cell.dataset.drop;
+  if (!t || t.fecha === nueva) return;
+  const { error } = await sb.from('tareas').update({ fecha: nueva }).eq('id', t.id);
+  if (error) return toast(error.message, true);
+  S.calDia = nueva; await loadAgenda(); render(); toast('Tarea movida al ' + fmtD(nueva));
+});
+
 /* ----- notas ----- */
 function notasFiltradas() {
   const q = S.buscaNota.trim().toLowerCase();
@@ -746,6 +891,13 @@ async function agClick(a, el) {
   else if (a === 'ag-hechas') { S.mostrarHechas = !S.mostrarHechas; render(); }
   else if (a === 'ag-new-nota') { S.editNota = 'new'; render(); $('#nn')?.focus(); }
   else if (a === 'ag-edit-nota') { S.editNota = id; render(); window.scrollTo(0, 0); $('#nn')?.focus(); }
+  else if (a === 'ag-cal-prev' || a === 'ag-cal-next') {
+    const { y, m } = S.calMes, n = new Date(y, m + (a === 'ag-cal-next' ? 1 : -1), 1);
+    S.calMes = { y: n.getFullYear(), m: n.getMonth() }; S.editTarea = null; render();
+  }
+  else if (a === 'ag-cal-hoy') { const n = new Date(); S.calMes = { y: n.getFullYear(), m: n.getMonth() }; S.calDia = todayStr(); S.editTarea = null; render(); }
+  else if (a === 'ag-cal-dia') { S.calDia = el.dataset.d; S.editTarea = null; render(); }
+  else if (a === 'ag-cal-chip') { S.calDia = el.dataset.d; S.editTarea = id; render(); $('#et')?.focus(); }
   else if (a === 'ag-del-tarea') {
     if (!confirm('¿Eliminar esta tarea? No se puede deshacer.')) return;
     const { error } = await sb.from('tareas').delete().eq('id', id);
@@ -773,7 +925,7 @@ async function agSubmit(kind, fd) {
     };
     const { error } = await sb.from('tareas').insert(row);
     if (error) return toast(error.message, true);
-    await loadAgenda(); render(); $('#nt')?.focus(); toast('Tarea agregada');
+    await loadAgenda(); render(); (document.getElementById('dt') || document.getElementById('nt'))?.focus(); toast('Tarea agregada');
   }
   else if (kind === 'ag-tarea-edit') {
     const row = {
