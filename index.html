@@ -5,77 +5,188 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Portal de clientes · Vertag Solutions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b1220; --panel:#131c2f; --panel2:#1a2540; --line:#243253;
-    --txt:#e8edf7; --muted:#8fa0c2; --accent:#3b82f6; --accent2:#22d3ee;
-    --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    --bg:#EDF0EE; --surface:#FFFFFF; --ink:#101C2B; --ink2:#1B2A40;
+    --muted:#5B6878; --line:#D8DEDB; --soft:#F5F7F6;
+    --accent:#2540E8; --done:#0F8A5F; --bad:#C2362F;
+    --display:'Bricolage Grotesque',system-ui,sans-serif;
+    --text:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  a{color:var(--accent2)}
-  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
-  .brand{font-weight:700;letter-spacing:.3px}
-  .brand span{color:var(--accent2)}
-  .who{color:var(--muted);font-size:13px;text-align:right}
-  nav.tabs{display:flex;gap:6px;padding:12px 22px 0;max-width:1000px;margin:0 auto}
-  nav.tabs button{background:none;border:0;color:var(--muted);padding:9px 14px;border-radius:8px 8px 0 0;cursor:pointer;font-size:15px}
-  nav.tabs button.on{color:var(--txt);background:var(--panel);border:1px solid var(--line);border-bottom-color:var(--panel)}
-  main{max-width:1000px;margin:0 auto;padding:20px 22px 60px}
-  h1{font-size:22px;margin:4px 0 16px} h2{font-size:18px;margin:0 0 10px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .card.click{cursor:pointer;transition:.15s} .card.click:hover{border-color:var(--accent);transform:translateY(-2px)}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .muted{color:var(--muted);font-size:13px}
-  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);white-space:nowrap}
-  .b-en_curso,.b-en_progreso,.b-abierto{color:#93c5fd;border-color:#1e3a8a;background:#10224a}
-  .b-finalizado,.b-resuelto,.b-cerrado{color:#86efac;border-color:#14532d;background:#0e2a1a}
-  .b-en_pausa,.b-esperando_cliente,.b-media{color:#fcd34d;border-color:#78350f;background:#2b1d08}
-  .b-alta,.b-urgente{color:#fca5a5;border-color:#7f1d1d;background:#2d1010}
-  .bar{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:10px 0 6px}
-  .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-  button.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-size:14px;cursor:pointer}
-  button.btn:hover{filter:brightness(1.1)} button.btn:disabled{opacity:.5;cursor:default}
-  button.ghost{background:none;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px}
-  button.ghost:hover{border-color:var(--accent)}
-  button.link{background:none;border:0;color:var(--accent2);cursor:pointer;padding:0;font-size:14px}
-  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
-  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font:inherit}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
-  textarea{min-height:90px;resize:vertical}
-  input[type=checkbox]{width:auto}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:560px){.two{grid-template-columns:1fr} .who{display:none}}
-  .login{max-width:380px;margin:9vh auto;padding:0 18px}
-  .timeline{list-style:none;margin:0;padding:0}
-  .timeline li{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-  .timeline li:last-child{border-bottom:0}
-  .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;margin-top:2px}
-  .dot.done{background:var(--ok);border-color:var(--ok);color:#052e14}
-  .dot.late{border-color:var(--bad)}
-  .late-t{color:#fca5a5}
-  .msg{padding:10px 12px;border-radius:10px;background:var(--panel2);margin:8px 0;white-space:pre-wrap;word-break:break-word}
-  .msg.mine{background:#12306b}
-  .msg.internal{background:#2b1d08;border:1px dashed #78350f}
-  .msg small{display:block;color:var(--muted);margin-bottom:3px}
-  .pre{white-space:pre-wrap;word-break:break-word}
-  .empty{text-align:center;color:var(--muted);padding:34px 10px}
-  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:10px 18px;border-radius:10px;display:none;z-index:20}
-  #toast.err{border-color:var(--bad)} #toast.show{display:block}
-  footer{max-width:1000px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:13px}
-  .spacer{height:14px}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--text)}
+  h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0;line-height:1.1}
+  p{margin:0}
+  a{color:var(--accent)}
+  :focus-visible{outline:3px solid #8fa2ff;outline-offset:2px;border-radius:6px}
+  button{font:inherit;color:inherit}
+
+  /* ---------- estructura ---------- */
+  .app{display:grid;grid-template-columns:252px minmax(0,1fr);min-height:100vh}
+  aside.side{background:var(--ink);color:#C9D3E3;padding:24px 16px;display:flex;flex-direction:column;gap:26px;position:sticky;top:0;height:100vh}
+  .logo{display:flex;align-items:center;gap:11px;padding:0 8px;color:#fff}
+  .logo svg{flex:none}
+  .logo b{font:700 19px/1 var(--display);letter-spacing:-.02em;display:block}
+  .logo small{font-size:12px;color:#8C9AB3}
+  .navlist{display:flex;flex-direction:column;gap:4px}
+  .navbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;color:#C9D3E3;padding:10px 12px;border-radius:9px;cursor:pointer;font-weight:500}
+  .navbtn:hover{background:var(--ink2);color:#fff}
+  .navbtn.on{background:#fff;color:var(--ink)}
+  .count{min-width:22px;text-align:center;font-size:12px;font-weight:600;padding:1px 7px;border-radius:99px;background:var(--accent);color:#fff}
+  .navbtn.on .count{background:var(--ink);color:#fff}
+  .sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:0 8px}
+  .me{font-weight:600;color:#fff;word-break:break-word}
+  .me small{display:block;font-weight:400;color:#8C9AB3}
+  .sidefoot a{color:#C9D3E3;font-size:14px}
+  .sidefoot button{background:none;border:1px solid #33435E;color:#C9D3E3;border-radius:8px;padding:7px 12px;cursor:pointer;text-align:left}
+  .sidefoot button:hover{border-color:#8C9AB3;color:#fff}
+
+  .page{padding:40px clamp(18px,4vw,56px) 70px;max-width:1160px;width:100%}
+  .pagehead{margin-bottom:26px}
+  .pagehead h1{font-size:clamp(28px,4vw,40px)}
+  .lead{color:var(--muted);font-size:16px;margin-top:8px}
+  .back{background:none;border:0;color:var(--muted);cursor:pointer;padding:0;margin-bottom:18px;display:inline-flex;align-items:center;gap:4px}
+  .back:hover{color:var(--ink)}
+
+  /* ---------- etiquetas de estado ---------- */
+  .tag{--c:var(--muted);display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:3px 10px 3px 9px;border-radius:99px;color:var(--c);background:color-mix(in srgb,var(--c) 11%,white);white-space:nowrap}
+  .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+  .t-planificado,.t-cerrado,.t-baja{--c:#5B6878}
+  .t-en_curso,.t-abierto{--c:#2540E8}
+  .t-media{--c:#46618F}
+  .t-en_pausa,.t-en_progreso{--c:#A86400}
+  .t-esperando_cliente,.t-alta{--c:#C25100}
+  .t-finalizado,.t-resuelto{--c:#0F8A5F}
+  .t-urgente{--c:#C2362F}
+
+  /* ---------- riel de etapas (la línea de proceso) ---------- */
+  .rail{display:flex;gap:5px}
+  .seg{flex:1;height:12px;border-radius:3px;background:#DDE3E0;position:relative}
+  .seg.done{background:var(--done)}
+  .seg.now{background:#fff;box-shadow:inset 0 0 0 2px var(--accent)}
+  .rail.empty .seg{background:repeating-linear-gradient(135deg,#DDE3E0 0 6px,#EDF0EE 6px 12px)}
+
+  /* ---------- proyectos ---------- */
+  .projlist{display:flex;flex-direction:column;gap:12px}
+  .proj{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:12px 36px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 26px;cursor:pointer}
+  .proj:hover{border-color:var(--ink)}
+  .proj h3{font-size:22px}
+  .proj .who{color:var(--muted);margin-top:2px}
+  .proj .tag{margin-top:10px}
+  .stage{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted)}
+  .stage b{color:var(--ink);font-weight:600}
+
+  .split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(250px,1fr);gap:18px;align-items:start}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px 26px}
+  .panel h2{font-size:20px;margin-bottom:16px}
+  .phead{margin-bottom:22px}
+  .phead .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px}
+  .phead h1{font-size:clamp(28px,4vw,40px)}
+  .phead p{color:var(--muted);margin-top:10px;max-width:62ch;white-space:pre-wrap}
+  .pct{font:700 44px/1 var(--display);letter-spacing:-.03em}
+  .facts{display:grid;gap:10px;margin:18px 0 20px}
+  .facts div{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:10px}
+  .facts span{color:var(--muted)}
+  .facts b{font-weight:600;text-align:right}
+
+  .steps{list-style:none;margin:0;padding:0;position:relative}
+  .steps::before{content:"";position:absolute;left:11px;top:14px;bottom:14px;width:2px;background:var(--line)}
+  .step{position:relative;display:grid;grid-template-columns:24px 1fr;gap:14px;padding:11px 0}
+  .node{width:24px;height:24px;border-radius:50%;background:var(--surface);border:2px solid #B9C3BE;display:grid;place-items:center;position:relative;z-index:1;font-size:13px;line-height:1;color:#fff}
+  .step.done .node{background:var(--done);border-color:var(--done)}
+  .step.now .node{border-color:var(--accent);box-shadow:0 0 0 4px #DCE2FF}
+  .step.late .node{border-color:var(--bad)}
+  .step h3{font:600 16px/1.3 var(--text);letter-spacing:0}
+  .step .d{color:var(--muted);font-size:14px;margin-top:2px;white-space:pre-wrap}
+  .step .when{color:var(--muted);font-size:14px;margin-top:2px}
+  .step.late .when{color:var(--bad);font-weight:500}
+  .step .tag{margin-left:8px;vertical-align:2px}
+  .chk{display:inline-flex;align-items:center;gap:7px;margin-top:6px;font-size:14px;cursor:pointer}
+  .chk input{width:17px;height:17px;accent-color:var(--done)}
+
+  /* ---------- soporte ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .seg2{display:inline-flex;background:#DDE3E0;border-radius:10px;padding:3px}
+  .seg2 button{background:none;border:0;padding:7px 16px;border-radius:8px;cursor:pointer;color:var(--muted);font-weight:500}
+  .seg2 button.on{background:var(--surface);color:var(--ink)}
+  .tickets{display:flex;flex-direction:column;gap:10px}
+  .tk{--c:var(--muted);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:15px 20px;cursor:pointer}
+  .tk:hover{border-color:var(--ink);border-left-color:var(--c)}
+  .tk strong{font-weight:600;font-size:16px}
+  .tk .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:2px 18px;color:var(--muted);font-size:14px}
+  .tk .tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+  .chat{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+  .bub{max-width:88%;padding:10px 14px;border-radius:14px 14px 14px 4px;background:var(--soft);border:1px solid var(--line);white-space:pre-wrap;word-break:break-word}
+  .bub small{display:block;color:var(--muted);font-size:12.5px;margin-bottom:2px}
+  .bub.mine{align-self:flex-end;border-radius:14px 14px 4px 14px;background:#E6EAFF;border-color:#C7D0FF}
+  .bub.internal{background:#FFF4DC;border:1px dashed #D9A441}
+  .desc{white-space:pre-wrap;word-break:break-word;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+
+  /* ---------- formularios y botones ---------- */
+  label{display:block;font-size:14px;font-weight:500;margin:14px 0 5px}
+  input,select,textarea{width:100%;background:var(--surface);border:1px solid #B9C3BE;color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit}
+  input:focus,select:focus,textarea:focus{outline:3px solid #8fa2ff;outline-offset:0;border-color:var(--accent)}
+  textarea{min-height:100px;resize:vertical}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .btn{background:var(--accent);color:#fff;border:0;border-radius:9px;padding:10px 18px;font-weight:600;cursor:pointer}
+  .btn:hover{background:#1B33C4}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn.block{width:100%}
+  .ghost{background:var(--surface);border:1px solid #B9C3BE;border-radius:9px;padding:9px 16px;font-weight:500;cursor:pointer}
+  .ghost:hover{border-color:var(--ink)}
+  .linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;text-decoration:underline}
+  .formrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+  .chk2{display:flex;align-items:center;gap:8px;font-weight:400;margin:0}
+  .chk2 input{width:auto}
+  .empty{background:var(--surface);border:1px dashed #B9C3BE;border-radius:16px;padding:38px 24px;text-align:center;color:var(--muted)}
+  .empty p{max-width:46ch;margin:0 auto 16px}
+
+  /* ---------- acceso ---------- */
+  .auth{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:100vh}
+  .auth-brand{background:var(--ink);color:#fff;padding:48px clamp(24px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+  .auth-brand h1{font-size:clamp(34px,5vw,58px);line-height:1.02;max-width:12ch}
+  .auth-brand p{color:#A9B6CC;max-width:38ch;margin-top:18px}
+  .auth-form{display:flex;align-items:center;justify-content:center;padding:36px 24px}
+  .auth-form form{width:100%;max-width:380px}
+  .auth-form h2{font-size:28px;margin-bottom:6px}
+  .auth-form .lead{margin:0 0 10px}
+  .auth-form .linkrow{margin-top:14px;text-align:center}
+
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;display:none;z-index:50;max-width:90vw}
+  #toast.err{background:var(--bad)} #toast.show{display:block}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:900px){
+    .app{grid-template-columns:1fr}
+    aside.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:14px 16px}
+    .navlist{flex-direction:row;order:3;width:100%}
+    .navbtn{justify-content:center;flex:1}
+    .sidefoot{margin:0 0 0 auto;flex-direction:row;align-items:center;order:2}
+    .sidefoot .me,.sidefoot a{display:none}
+    .split{grid-template-columns:1fr}
+    .proj{grid-template-columns:1fr}
+    .auth{grid-template-columns:1fr}
+    .auth-brand{padding:28px 24px;gap:24px}
+    .auth-brand h1{max-width:none}
+  }
+  @media(max-width:560px){.two{grid-template-columns:1fr} .tk{grid-template-columns:1fr} .tk .tags{justify-content:flex-start}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* =====================================================================
-   CONFIGURACIÓN: reemplazá estos dos valores (Supabase > Project Settings > API)
-   Usá la clave "anon / public". NUNCA pongas la "service_role" acá.
+   CONFIGURACIÓN
+   Usá la clave publishable (pública). NUNCA pongas la "secret"/"service_role" acá.
    ===================================================================== */
 const SUPABASE_URL      = 'https://krvwdjzhknoulekvbdgb.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_0Tj2xN2sc63998srKWfJiw_a6DnzfAm';
@@ -85,9 +196,10 @@ const WHATSAPP_VERTAG   = '5493764380293';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const $  = (s, r = document) => r.querySelector(s);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmtD = d => { if (!d) return '—'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; };
+const fmtD = d => { if (!d) return 'sin fecha'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; };
 const fmtT = t => new Date(t).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
 const todayStr = () => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; };
+const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
 function toast(msg, err = false) {
   const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err ? ' err' : '');
   clearTimeout(toast._t); toast._t = setTimeout(() => t.className = '', 3500);
@@ -99,18 +211,26 @@ const L = {
   tipo:     { mantenimiento:'Mantenimiento', mejora:'Mejora', error:'Error', consulta:'Consulta' },
   prioridad:{ baja:'Baja', media:'Media', alta:'Alta', urgente:'Urgente' }
 };
-const badge = (txt, cls) => `<span class="badge b-${esc(cls)}">${esc(txt)}</span>`;
+const tag = (txt, key) => `<span class="tag t-${esc(key)}">${esc(txt)}</span>`;
+
+const LOGO = `<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#2540E8"/><path d="M8.5 9.5 16 23l7.5-13.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHEV = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 /* ---------- estado ---------- */
 // Si el usuario llega desde un mail de invitación o de recuperación, hay que pedirle que cree su contraseña.
 const NEEDS_PASSWORD = /type=(invite|recovery)/.test(location.hash);
 const S = {
   session: null, perfil: null, clienteNombre: '',
-  proyectos: [], tickets: [], clientes: {}, perfiles: {},
+  proyectos: [], hitosAll: {}, tickets: [], clientes: {}, perfiles: {},
   view: 'proyectos', projectId: null, hitos: [], ticketId: null, comentarios: [],
   showForm: false, formProyecto: '', soloActivos: true, passwordDone: false
 };
 const isAdmin = () => S.perfil?.rol === 'admin';
+const openCount = () => S.tickets.filter(t => !['resuelto','cerrado'].includes(t.estado)).length;
+const firstName = () => {
+  const n = (S.perfil.nombre || S.perfil.email || '').split('@')[0].trim().split(/\s+/)[0];
+  return n ? n.charAt(0).toUpperCase() + n.slice(1) : '';
+};
 
 /* ---------- arranque ---------- */
 async function boot() {
@@ -125,7 +245,7 @@ sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') { S.session = null; S
 async function loadAll() {
   const uid = S.session.user.id;
   const { data: perfil, error } = await sb.from('perfiles').select('id,rol,nombre,email,cliente_id').eq('id', uid).single();
-  if (error || !perfil) { toast('No se pudo cargar tu perfil', true); return renderLogin(); }
+  if (error || !perfil) { toast('No pudimos cargar tu perfil. Probá ingresar de nuevo.', true); return renderLogin(); }
   S.perfil = perfil;
   if (!isAdmin() && !perfil.cliente_id) return renderSinCliente();
 
@@ -133,12 +253,15 @@ async function loadAll() {
     const { data: c } = await sb.from('clientes').select('nombre').eq('id', perfil.cliente_id).maybeSingle();
     S.clienteNombre = c?.nombre || '';
   }
-  const [p, t] = await Promise.all([
+  const [p, t, h] = await Promise.all([
     sb.from('v_proyectos_resumen').select('*').order('updated_at', { ascending: false }),
-    sb.from('tickets').select('*, proyectos(nombre)').order('created_at', { ascending: false })
+    sb.from('tickets').select('*, proyectos(nombre)').order('created_at', { ascending: false }),
+    sb.from('hitos').select('id,proyecto_id,orden,nombre,completado,fecha_objetivo').order('orden')
   ]);
-  if (p.error || t.error) toast((p.error || t.error).message, true);
+  const err = p.error || t.error || h.error;
+  if (err) toast(err.message, true);
   S.proyectos = p.data || []; S.tickets = t.data || [];
+  groupHitos(h.data || []);
 
   if (isAdmin()) {
     const [c, pf] = await Promise.all([
@@ -150,114 +273,165 @@ async function loadAll() {
   }
   render();
 }
+function groupHitos(rows) {
+  S.hitosAll = {};
+  rows.forEach(h => (S.hitosAll[h.proyecto_id] ||= []).push(h));
+}
 
 /* ---------- pantallas de acceso ---------- */
-function shell(inner) { $('#app').innerHTML = `<div class="login">${inner}</div>`; }
-
+function authShell(title, lead, formHtml) {
+  $('#app').innerHTML = `
+    <div class="auth">
+      <section class="auth-brand">
+        <div class="logo">${LOGO}<div><b>Vertag</b><small>Solutions</small></div></div>
+        <div>
+          <h1>Eficiencia, tecnología y capital.</h1>
+          <p>Seguí el avance de tus proyectos y pedí soporte desde un solo lugar.</p>
+        </div>
+        <small style="color:#8C9AB3">Portal de clientes</small>
+      </section>
+      <section class="auth-form">${formHtml}</section>
+    </div>`;
+}
 function renderLogin() {
-  shell(`
-    <div class="brand" style="font-size:24px;margin-bottom:6px">VERTAG <span>Solutions</span></div>
-    <p class="muted" style="margin-top:0">Portal de clientes</p>
-    <form class="card" data-form="login">
-      <label>Email</label><input type="email" name="email" required autocomplete="username">
-      <label>Contraseña</label><input type="password" name="password" required autocomplete="current-password">
-      <div class="spacer"></div>
-      <button class="btn" style="width:100%">Ingresar</button>
-      <p style="text-align:center;margin:12px 0 0"><button type="button" class="link" data-action="reset">Olvidé mi contraseña</button></p>
+  authShell('', '', `
+    <form data-form="login">
+      <h2>Ingresá a tu portal</h2>
+      <p class="lead">Usá el email con el que te invitamos.</p>
+      <label for="email">Email</label><input id="email" type="email" name="email" required autocomplete="username">
+      <label for="pass">Contraseña</label><input id="pass" type="password" name="password" required autocomplete="current-password">
+      <div class="formrow"><button class="btn block">Ingresar</button></div>
+      <p class="linkrow"><button type="button" class="linkbtn" data-action="reset">Olvidé mi contraseña</button></p>
     </form>`);
 }
-
 function renderSetPassword() {
-  shell(`
-    <div class="brand" style="font-size:24px;margin-bottom:6px">VERTAG <span>Solutions</span></div>
-    <p class="muted" style="margin-top:0">Creá tu contraseña para entrar al portal</p>
-    <form class="card" data-form="setpass">
-      <label>Nueva contraseña (mínimo 8 caracteres)</label>
-      <input type="password" name="p1" minlength="8" required autocomplete="new-password">
-      <label>Repetila</label>
-      <input type="password" name="p2" minlength="8" required autocomplete="new-password">
-      <div class="spacer"></div>
-      <button class="btn" style="width:100%">Guardar y entrar</button>
+  authShell('', '', `
+    <form data-form="setpass">
+      <h2>Creá tu contraseña</h2>
+      <p class="lead">Con ella vas a ingresar al portal.</p>
+      <label for="p1">Contraseña (mínimo 8 caracteres)</label>
+      <input id="p1" type="password" name="p1" minlength="8" required autocomplete="new-password">
+      <label for="p2">Repetila</label>
+      <input id="p2" type="password" name="p2" minlength="8" required autocomplete="new-password">
+      <div class="formrow"><button class="btn block">Guardar y entrar</button></div>
     </form>`);
 }
-
 function renderSinCliente() {
-  shell(`
-    <div class="card">
-      <h2>Tu cuenta está casi lista</h2>
-      <p class="muted">Todavía no está vinculada a una empresa. Escribinos y la activamos.</p>
-      <p><a href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Contactar por WhatsApp</a></p>
-      <button class="ghost" data-action="logout">Cerrar sesión</button>
+  authShell('', '', `
+    <div style="max-width:380px">
+      <h2 style="font-size:28px;margin-bottom:8px">Tu cuenta está casi lista</h2>
+      <p class="lead">Todavía no está vinculada a una empresa. Escribinos y la activamos.</p>
+      <div class="formrow" style="justify-content:flex-start">
+        <a class="btn" style="text-decoration:none" href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+        <button class="ghost" data-action="logout">Cerrar sesión</button>
+      </div>
     </div>`);
 }
 
-/* ---------- render principal ---------- */
+/* ---------- estructura principal ---------- */
 function render() {
-  const nombre = S.perfil.nombre || S.perfil.email || '';
-  const empresa = isAdmin() ? 'Administrador Vertag' : S.clienteNombre;
+  const abiertos = openCount();
   $('#app').innerHTML = `
-    <header class="top">
-      <div class="brand">VERTAG <span>Solutions</span></div>
-      <div class="row">
-        <div class="who">${esc(nombre)}<br>${esc(empresa)}</div>
-        <button class="ghost" data-action="logout">Salir</button>
-      </div>
-    </header>
-    <nav class="tabs">
-      <button class="${S.view === 'proyectos' ? 'on' : ''}" data-action="tab" data-v="proyectos">Proyectos</button>
-      <button class="${S.view === 'tickets' ? 'on' : ''}" data-action="tab" data-v="tickets">Soporte${openCount() ? ` (${openCount()})` : ''}</button>
-    </nav>
-    <main>${S.view === 'proyectos' ? (S.projectId ? vProyecto() : vProyectos()) : (S.ticketId ? vTicket() : vTickets())}</main>
-    <footer>¿Necesitás algo urgente? <a href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Escribinos por WhatsApp</a></footer>`;
+    <div class="app">
+      <aside class="side">
+        <div class="logo">${LOGO}<div><b>Vertag</b><small>Solutions</small></div></div>
+        <nav class="navlist" aria-label="Secciones">
+          <button class="navbtn ${S.view === 'proyectos' ? 'on' : ''}" data-action="tab" data-v="proyectos">Proyectos</button>
+          <button class="navbtn ${S.view === 'tickets' ? 'on' : ''}" data-action="tab" data-v="tickets">Soporte${abiertos ? `<span class="count">${abiertos}</span>` : ''}</button>
+        </nav>
+        <div class="sidefoot">
+          <div class="me">${esc(S.perfil.nombre || S.perfil.email || '')}<small>${isAdmin() ? 'Administración Vertag' : esc(S.clienteNombre)}</small></div>
+          <a href="https://wa.me/${WHATSAPP_VERTAG}" target="_blank" rel="noopener">Escribinos por WhatsApp</a>
+          <button data-action="logout">Salir</button>
+        </div>
+      </aside>
+      <main class="page">${S.view === 'proyectos' ? (S.projectId ? vProyecto() : vProyectos()) : (S.ticketId ? vTicket() : vTickets())}</main>
+    </div>`;
 }
-const openCount = () => S.tickets.filter(t => !['resuelto','cerrado'].includes(t.estado)).length;
 
 /* ---------- proyectos ---------- */
+const hitosDe = pid => S.hitosAll[pid] || [];
+const etapaActual = pid => hitosDe(pid).find(h => !h.completado);
+function rail(pid) {
+  const hs = hitosDe(pid);
+  if (!hs.length) return `<div class="rail empty" role="img" aria-label="Sin etapas cargadas"><i class="seg"></i></div>`;
+  const cur = etapaActual(pid);
+  const hechas = hs.filter(h => h.completado).length;
+  return `<div class="rail" role="img" aria-label="${hechas} de ${hs.length} etapas completadas">${hs.map(h =>
+    `<i class="seg${h.completado ? ' done' : ''}${cur && cur.id === h.id ? ' now' : ''}" title="${esc(h.nombre)}"></i>`).join('')}</div>`;
+}
+function resumen() {
+  const act = S.proyectos.filter(p => p.estado === 'en_curso').length;
+  const ab = openCount();
+  return isAdmin()
+    ? `Hay ${plural(act, 'proyecto en curso', 'proyectos en curso')} y ${plural(ab, 'solicitud por atender', 'solicitudes por atender')}.`
+    : `Tenés ${plural(act, 'proyecto en curso', 'proyectos en curso')} y ${plural(ab, 'solicitud abierta', 'solicitudes abiertas')}.`;
+}
+
 function vProyectos() {
-  if (!S.proyectos.length) return `<h1>Proyectos</h1><div class="card empty">Todavía no hay proyectos cargados.</div>`;
-  return `<h1>Proyectos</h1><div class="grid">${S.proyectos.map(p => `
-    <div class="card click" data-action="open-project" data-id="${esc(p.id)}">
-      <div class="row"><strong>${esc(p.nombre)}</strong>${badge(L.proyecto[p.estado], p.estado)}</div>
-      ${isAdmin() ? `<div class="muted">${esc(S.clientes[p.cliente_id] || '')}</div>` : ''}
-      <div class="bar"><i style="width:${Number(p.avance) || 0}%"></i></div>
-      <div class="row muted"><span>${Number(p.avance) || 0}% completado</span><span>${p.hitos_completados}/${p.hitos_total} hitos</span></div>
-      <div class="muted" style="margin-top:8px">Próximo hito: ${fmtD(p.proximo_hito_fecha)}</div>
-    </div>`).join('')}</div>`;
+  const head = `<div class="pagehead"><h1>Hola, ${esc(firstName())}</h1><p class="lead">${resumen()}</p></div>`;
+  if (!S.proyectos.length) return head + `<div class="empty"><p>Todavía no hay proyectos cargados. Cuando empecemos a trabajar juntos, vas a ver el avance acá.</p></div>`;
+  return head + `<div class="projlist">${S.proyectos.map(p => {
+    const cur = etapaActual(p.id);
+    const total = hitosDe(p.id).length;
+    return `
+    <article class="proj" role="button" tabindex="0" data-action="open-project" data-id="${esc(p.id)}">
+      <div>
+        <h3>${esc(p.nombre)}</h3>
+        ${isAdmin() ? `<p class="who">${esc(S.clientes[p.cliente_id] || '')}</p>` : ''}
+        ${tag(L.proyecto[p.estado], p.estado)}
+      </div>
+      <div>
+        ${rail(p.id)}
+        <div class="stage">
+          <span>${total ? (cur ? `<b>Etapa actual:</b> ${esc(cur.nombre)}` : '<b>Todas las etapas completadas</b>') : 'Todavía sin etapas cargadas'}</span>
+          ${p.proximo_hito_fecha ? `<span>Próximo hito el ${fmtD(p.proximo_hito_fecha)}</span>` : ''}
+        </div>
+      </div>
+    </article>`;
+  }).join('')}</div>`;
 }
 
 function vProyecto() {
   const p = S.proyectos.find(x => x.id === S.projectId);
   if (!p) return '';
   const hoy = todayStr();
+  const cur = S.hitos.find(h => !h.completado);
   return `
-    <button class="link" data-action="back-project">← Volver a proyectos</button>
-    <div class="spacer"></div>
-    <div class="card">
-      <div class="row"><h1 style="margin:0">${esc(p.nombre)}</h1>${badge(L.proyecto[p.estado], p.estado)}</div>
-      ${isAdmin() ? `<div class="muted">${esc(S.clientes[p.cliente_id] || '')}</div>` : ''}
-      ${p.descripcion ? `<p class="pre">${esc(p.descripcion)}</p>` : ''}
-      <div class="bar"><i style="width:${Number(p.avance) || 0}%"></i></div>
-      <div class="row muted">
-        <span>${Number(p.avance) || 0}% completado · ${p.hitos_completados}/${p.hitos_total} hitos</span>
-        <span>Fin estimado: ${fmtD(p.fecha_fin_estimada)}</span>
-      </div>
-      ${!isAdmin() ? `<div class="spacer"></div><button class="ghost" data-action="ticket-from-project" data-id="${esc(p.id)}">Solicitar soporte sobre este proyecto</button>` : ''}
+    <button class="back" data-action="back-project">${CHEV} Volver a proyectos</button>
+    <div class="phead">
+      <div class="row"><h1>${esc(p.nombre)}</h1>${tag(L.proyecto[p.estado], p.estado)}</div>
+      ${isAdmin() ? `<p style="margin-top:6px">${esc(S.clientes[p.cliente_id] || '')}</p>` : ''}
+      ${p.descripcion ? `<p>${esc(p.descripcion)}</p>` : ''}
     </div>
-    <div class="spacer"></div>
-    <div class="card">
-      <h2>Avance por etapas</h2>
-      ${S.hitos.length ? `<ul class="timeline">${S.hitos.map(h => {
-        const late = !h.completado && h.fecha_objetivo && h.fecha_objetivo < hoy;
-        return `<li>
-          <div class="dot ${h.completado ? 'done' : late ? 'late' : ''}">${h.completado ? '✓' : ''}</div>
-          <div style="flex:1">
-            <div class="row"><strong>${esc(h.nombre)}</strong>
-              ${isAdmin() ? `<label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--txt)"><input type="checkbox" data-action="toggle-hito" data-id="${esc(h.id)}" ${h.completado ? 'checked' : ''}> Completado</label>` : ''}
+    <div class="split">
+      <section class="panel">
+        <h2>Etapas del proyecto</h2>
+        ${S.hitos.length ? `<ol class="steps">${S.hitos.map(h => {
+          const late = !h.completado && h.fecha_objetivo && h.fecha_objetivo < hoy;
+          const now = cur && cur.id === h.id;
+          return `<li class="step ${h.completado ? 'done' : ''} ${now ? 'now' : ''} ${late ? 'late' : ''}">
+            <span class="node">${h.completado ? '✓' : ''}</span>
+            <div>
+              <h3>${esc(h.nombre)}${now ? `<span class="tag t-en_curso">Etapa actual</span>` : ''}</h3>
+              ${h.descripcion ? `<p class="d">${esc(h.descripcion)}</p>` : ''}
+              <p class="when">${h.completado ? 'Completada el ' + fmtT(h.completado_en) : (late ? 'Vencida, objetivo el ' : 'Objetivo: ') + fmtD(h.fecha_objetivo)}</p>
+              ${isAdmin() ? `<label class="chk"><input type="checkbox" data-action="toggle-hito" data-id="${esc(h.id)}" ${h.completado ? 'checked' : ''}> Marcar como completada</label>` : ''}
             </div>
-            ${h.descripcion ? `<div class="muted pre">${esc(h.descripcion)}</div>` : ''}
-            <div class="muted ${late ? 'late-t' : ''}">${h.completado ? 'Completado el ' + fmtT(h.completado_en) : 'Objetivo: ' + fmtD(h.fecha_objetivo) + (late ? ' (vencido)' : '')}</div>
-          </div></li>`;
-      }).join('')}</ul>` : `<div class="empty">Este proyecto todavía no tiene etapas cargadas.</div>`}
+          </li>`;
+        }).join('')}</ol>` : `<p style="color:var(--muted)">Este proyecto todavía no tiene etapas cargadas.</p>`}
+      </section>
+      <section class="panel">
+        <div class="pct">${Number(p.avance) || 0}%</div>
+        <p style="color:var(--muted);margin:4px 0 14px">completado</p>
+        ${rail(p.id)}
+        <div class="facts">
+          <div><span>Etapas completadas</span><b>${p.hitos_completados} de ${p.hitos_total}</b></div>
+          <div><span>Inicio</span><b>${fmtD(p.fecha_inicio)}</b></div>
+          <div><span>Fin estimado</span><b>${fmtD(p.fecha_fin_estimada)}</b></div>
+        </div>
+        ${!isAdmin() ? `<button class="btn block" data-action="ticket-from-project" data-id="${esc(p.id)}">Pedir soporte sobre este proyecto</button>` : ''}
+      </section>
     </div>`;
 }
 
@@ -265,41 +439,46 @@ function vProyecto() {
 function vTickets() {
   const lista = S.tickets.filter(t => !S.soloActivos || !['resuelto','cerrado'].includes(t.estado));
   return `
-    <div class="row"><h1 style="margin:0">Soporte y mantenimiento</h1>
-      <div class="row">
-        <select data-action="filtro" style="width:auto">
-          <option value="1" ${S.soloActivos ? 'selected' : ''}>Solo activos</option>
-          <option value="0" ${!S.soloActivos ? 'selected' : ''}>Todos</option>
-        </select>
-        ${!isAdmin() ? `<button class="btn" data-action="toggle-form">${S.showForm ? 'Cancelar' : '+ Nueva solicitud'}</button>` : ''}
+    <div class="pagehead"><h1>Soporte</h1>
+      <p class="lead">${isAdmin() ? 'Solicitudes de todos los clientes.' : 'Pedí mantenimiento, mejoras o ayuda y seguí cada solicitud hasta que se resuelva.'}</p></div>
+    <div class="toolbar">
+      <div class="seg2" role="group" aria-label="Filtro">
+        <button class="${S.soloActivos ? 'on' : ''}" data-action="filtro" data-v="1">Activas</button>
+        <button class="${!S.soloActivos ? 'on' : ''}" data-action="filtro" data-v="0">Todas</button>
       </div>
+      ${!isAdmin() ? `<button class="btn" data-action="toggle-form">${S.showForm ? 'Cancelar' : 'Nueva solicitud'}</button>` : ''}
     </div>
-    <div class="spacer"></div>
     ${S.showForm && !isAdmin() ? formTicket() : ''}
-    ${lista.length ? lista.map(t => `
-      <div class="card click" style="margin-bottom:10px" data-action="open-ticket" data-id="${esc(t.id)}">
-        <div class="row"><strong>${esc(t.titulo)}</strong>
-          <span>${badge(L.ticket[t.estado], t.estado)} ${badge(L.prioridad[t.prioridad], t.prioridad)}</span></div>
-        <div class="muted">${isAdmin() ? esc(S.clientes[t.cliente_id] || '') + ' · ' : ''}${esc(L.tipo[t.tipo])}${t.proyectos?.nombre ? ' · ' + esc(t.proyectos.nombre) : ''} · ${fmtT(t.created_at)}</div>
-      </div>`).join('') : `<div class="card empty">No hay solicitudes ${S.soloActivos ? 'activas' : ''}.</div>`}`;
+    ${lista.length ? `<div class="tickets">${lista.map(t => `
+      <article class="tk t-${esc(t.estado)}" role="button" tabindex="0" data-action="open-ticket" data-id="${esc(t.id)}">
+        <strong>${esc(t.titulo)}</strong>
+        <div class="tags">${tag(L.ticket[t.estado], t.estado)}${tag('Prioridad ' + L.prioridad[t.prioridad].toLowerCase(), t.prioridad)}</div>
+        <div class="meta">
+          ${isAdmin() ? `<span>${esc(S.clientes[t.cliente_id] || '')}</span>` : ''}
+          <span>${esc(L.tipo[t.tipo])}</span>
+          ${t.proyectos?.nombre ? `<span>${esc(t.proyectos.nombre)}</span>` : ''}
+          <span>${fmtT(t.created_at)}</span>
+        </div>
+      </article>`).join('')}</div>`
+    : `<div class="empty"><p>${S.soloActivos ? 'No hay solicitudes activas.' : 'Todavía no hay solicitudes.'}${!isAdmin() ? ' Si algo no funciona o querés un cambio, creá una nueva.' : ''}</p>
+        ${!isAdmin() && !S.showForm ? `<button class="btn" data-action="toggle-form">Nueva solicitud</button>` : ''}</div>`}`;
 }
 
 function formTicket() {
   return `
-    <form class="card" data-form="ticket" style="margin-bottom:16px">
+    <form class="panel" data-form="ticket" style="margin-bottom:18px">
       <h2>Nueva solicitud</h2>
-      <label>Título</label><input name="titulo" maxlength="140" required placeholder="Ej: No puedo cargar un alumno nuevo">
+      <label for="tt">Título</label><input id="tt" name="titulo" maxlength="140" required placeholder="Ej: No puedo cargar un alumno nuevo">
       <div class="two">
-        <div><label>Tipo</label><select name="tipo">${Object.entries(L.tipo).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select></div>
-        <div><label>Prioridad</label><select name="prioridad">${Object.entries(L.prioridad).map(([k,v]) => `<option value="${k}" ${k==='media'?'selected':''}>${v}</option>`).join('')}</select></div>
+        <div><label for="tp">Tipo</label><select id="tp" name="tipo">${Object.entries(L.tipo).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select></div>
+        <div><label for="pr">Prioridad</label><select id="pr" name="prioridad">${Object.entries(L.prioridad).map(([k,v]) => `<option value="${k}" ${k==='media'?'selected':''}>${v}</option>`).join('')}</select></div>
       </div>
-      <label>Proyecto (opcional)</label>
-      <select name="proyecto_id"><option value="">— General —</option>
+      <label for="pj">Proyecto</label>
+      <select id="pj" name="proyecto_id"><option value="">General, no es de un proyecto</option>
         ${S.proyectos.map(p => `<option value="${esc(p.id)}" ${S.formProyecto === p.id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('')}
       </select>
-      <label>Descripción</label><textarea name="descripcion" placeholder="Contanos qué pasa o qué necesitás, con el mayor detalle posible"></textarea>
-      <div class="spacer"></div>
-      <button class="btn">Enviar solicitud</button>
+      <label for="ds">Descripción</label><textarea id="ds" name="descripcion" placeholder="Contanos qué pasa o qué necesitás, con el mayor detalle posible"></textarea>
+      <div class="formrow" style="justify-content:flex-end"><button class="btn">Enviar solicitud</button></div>
     </form>`;
 }
 
@@ -312,33 +491,42 @@ function vTicket() {
     return 'Vertag';
   };
   return `
-    <button class="link" data-action="back-ticket">← Volver a soporte</button>
-    <div class="spacer"></div>
-    <div class="card">
-      <div class="row"><h1 style="margin:0">${esc(t.titulo)}</h1>
-        <span>${badge(L.ticket[t.estado], t.estado)} ${badge(L.prioridad[t.prioridad], t.prioridad)}</span></div>
-      <div class="muted">${isAdmin() ? esc(S.clientes[t.cliente_id] || '') + ' · ' : ''}${esc(L.tipo[t.tipo])}${t.proyectos?.nombre ? ' · ' + esc(t.proyectos.nombre) : ''} · ${fmtT(t.created_at)}</div>
-      ${t.descripcion ? `<p class="pre">${esc(t.descripcion)}</p>` : ''}
-      ${isAdmin() ? `<label>Estado</label>
-        <select data-action="set-estado" data-id="${esc(t.id)}" style="max-width:240px">
-          ${Object.entries(L.ticket).map(([k,v]) => `<option value="${k}" ${t.estado === k ? 'selected' : ''}>${v}</option>`).join('')}
-        </select>` : ''}
-    </div>
-    <div class="spacer"></div>
-    <div class="card">
-      <h2>Conversación</h2>
-      ${S.comentarios.length ? S.comentarios.map(c => `
-        <div class="msg ${c.interno ? 'internal' : c.autor_id === S.session.user.id ? 'mine' : ''}">
-          <small>${esc(quien(c.autor_id))}${c.interno ? ' · NOTA INTERNA' : ''} · ${fmtT(c.created_at)}</small>${esc(c.mensaje)}
-        </div>`).join('') : `<div class="muted">Todavía no hay mensajes.</div>`}
-      ${['cerrado'].includes(t.estado) && !isAdmin() ? `<p class="muted">Esta solicitud está cerrada. Si necesitás algo más, creá una nueva.</p>` : `
-      <form data-form="comment" style="margin-top:12px">
-        <textarea name="mensaje" required placeholder="Escribir un mensaje…" style="min-height:70px"></textarea>
-        <div class="row" style="margin-top:8px">
-          ${isAdmin() ? `<label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--txt)"><input type="checkbox" name="interno"> Nota interna (el cliente no la ve)</label>` : '<span></span>'}
-          <button class="btn">Enviar</button>
+    <button class="back" data-action="back-ticket">${CHEV} Volver a soporte</button>
+    <div class="phead"><h1>${esc(t.titulo)}</h1></div>
+    <div class="split">
+      <section class="panel">
+        ${t.descripcion ? `<div class="desc">${esc(t.descripcion)}</div>` : ''}
+        <h2>Conversación</h2>
+        <div class="chat">
+          ${S.comentarios.length ? S.comentarios.map(c => `
+            <div class="bub ${c.interno ? 'internal' : c.autor_id === S.session.user.id ? 'mine' : ''}">
+              <small>${esc(quien(c.autor_id))}${c.interno ? ', nota interna' : ''} · ${fmtT(c.created_at)}</small>${esc(c.mensaje)}
+            </div>`).join('') : `<p style="color:var(--muted)">Todavía no hay mensajes. Vas a ver acá nuestras respuestas.</p>`}
         </div>
-      </form>`}
+        ${t.estado === 'cerrado' && !isAdmin() ? `<p style="color:var(--muted)">Esta solicitud está cerrada. Si necesitás algo más, creá una nueva.</p>` : `
+        <form data-form="comment">
+          <label for="msg" style="margin-top:0">Escribir un mensaje</label>
+          <textarea id="msg" name="mensaje" required style="min-height:80px"></textarea>
+          <div class="formrow">
+            ${isAdmin() ? `<label class="chk2"><input type="checkbox" name="interno"> Nota interna, el cliente no la ve</label>` : '<span></span>'}
+            <button class="btn">Enviar mensaje</button>
+          </div>
+        </form>`}
+      </section>
+      <section class="panel">
+        <div class="facts" style="margin-top:0">
+          <div><span>Estado</span>${tag(L.ticket[t.estado], t.estado)}</div>
+          <div><span>Prioridad</span>${tag(L.prioridad[t.prioridad], t.prioridad)}</div>
+          <div><span>Tipo</span><b>${esc(L.tipo[t.tipo])}</b></div>
+          ${t.proyectos?.nombre ? `<div><span>Proyecto</span><b>${esc(t.proyectos.nombre)}</b></div>` : ''}
+          ${isAdmin() ? `<div><span>Cliente</span><b>${esc(S.clientes[t.cliente_id] || '')}</b></div>` : ''}
+          <div><span>Creada</span><b>${fmtT(t.created_at)}</b></div>
+        </div>
+        ${isAdmin() ? `<label for="est" style="margin-top:0">Cambiar estado</label>
+          <select id="est" data-action="set-estado" data-id="${esc(t.id)}">
+            ${Object.entries(L.ticket).map(([k,v]) => `<option value="${k}" ${t.estado === k ? 'selected' : ''}>${v}</option>`).join('')}
+          </select>` : ''}
+      </section>
     </div>`;
 }
 
@@ -347,10 +535,10 @@ async function openProject(id) {
   S.projectId = id;
   const { data, error } = await sb.from('hitos').select('*').eq('proyecto_id', id).order('orden');
   if (error) toast(error.message, true);
-  S.hitos = data || []; render();
+  S.hitos = data || []; render(); window.scrollTo(0, 0);
 }
 async function openTicket(id) {
-  S.ticketId = id; await loadComentarios(); render();
+  S.ticketId = id; await loadComentarios(); render(); window.scrollTo(0, 0);
 }
 async function loadComentarios() {
   const { data, error } = await sb.from('ticket_comentarios').select('*').eq('ticket_id', S.ticketId).order('created_at');
@@ -358,8 +546,11 @@ async function loadComentarios() {
   S.comentarios = data || [];
 }
 async function refreshProyectos() {
-  const { data } = await sb.from('v_proyectos_resumen').select('*').order('updated_at', { ascending: false });
-  S.proyectos = data || [];
+  const [p, h] = await Promise.all([
+    sb.from('v_proyectos_resumen').select('*').order('updated_at', { ascending: false }),
+    sb.from('hitos').select('id,proyecto_id,orden,nombre,completado,fecha_objetivo').order('orden')
+  ]);
+  S.proyectos = p.data || []; groupHitos(h.data || []);
 }
 async function refreshTickets() {
   const { data } = await sb.from('tickets').select('*, proyectos(nombre)').order('created_at', { ascending: false });
@@ -369,27 +560,35 @@ async function refreshTickets() {
 document.addEventListener('click', async e => {
   const el = e.target.closest('[data-action]'); if (!el) return;
   const a = el.dataset.action;
+  if (a === 'toggle-hito' || a === 'set-estado') return; // se manejan en "change"
   if (a === 'logout') { await sb.auth.signOut(); }
   else if (a === 'tab') { S.view = el.dataset.v; S.projectId = null; S.ticketId = null; render(); }
   else if (a === 'open-project') openProject(el.dataset.id);
   else if (a === 'back-project') { S.projectId = null; render(); }
   else if (a === 'open-ticket') openTicket(el.dataset.id);
   else if (a === 'back-ticket') { S.ticketId = null; render(); }
+  else if (a === 'filtro') { S.soloActivos = el.dataset.v === '1'; render(); }
   else if (a === 'toggle-form') { S.showForm = !S.showForm; S.formProyecto = ''; render(); }
-  else if (a === 'ticket-from-project') { S.view = 'tickets'; S.ticketId = null; S.showForm = true; S.formProyecto = el.dataset.id; render(); }
+  else if (a === 'ticket-from-project') { S.view = 'tickets'; S.ticketId = null; S.showForm = true; S.formProyecto = el.dataset.id; render(); window.scrollTo(0, 0); }
   else if (a === 'reset') {
     const email = prompt('Escribí tu email y te mandamos un link para crear una nueva contraseña:');
     if (!email) return;
     const { error } = await sb.auth.resetPasswordForEmail(email.trim(), { redirectTo: location.origin + location.pathname });
-    toast(error ? error.message : 'Listo. Revisá tu correo.', !!error);
+    toast(error ? error.message : 'Listo, revisá tu correo.', !!error);
+  }
+});
+
+// Accesibilidad: las filas clickeables también se abren con Enter o Espacio
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role=button][data-action]')) {
+    e.preventDefault(); e.target.click();
   }
 });
 
 document.addEventListener('change', async e => {
   const el = e.target.closest('[data-action]'); if (!el) return;
   const a = el.dataset.action;
-  if (a === 'filtro') { S.soloActivos = el.value === '1'; render(); }
-  else if (a === 'set-estado') {
+  if (a === 'set-estado') {
     const { error } = await sb.from('tickets').update({ estado: el.value }).eq('id', el.dataset.id);
     if (error) return toast(error.message, true);
     await refreshTickets(); render(); toast('Estado actualizado');
@@ -397,24 +596,22 @@ document.addEventListener('change', async e => {
   else if (a === 'toggle-hito') {
     const { error } = await sb.from('hitos').update({ completado: el.checked }).eq('id', el.dataset.id);
     if (error) { toast(error.message, true); el.checked = !el.checked; return; }
-    await Promise.all([openProjectHitosOnly(), refreshProyectos()]); render(); toast('Etapa actualizada');
+    const { data } = await sb.from('hitos').select('*').eq('proyecto_id', S.projectId).order('orden');
+    S.hitos = data || [];
+    await refreshProyectos(); render(); toast('Etapa actualizada');
   }
 });
-async function openProjectHitosOnly() {
-  const { data } = await sb.from('hitos').select('*').eq('proyecto_id', S.projectId).order('orden');
-  S.hitos = data || [];
-}
 
 document.addEventListener('submit', async e => {
   const f = e.target.closest('[data-form]'); if (!f) return;
   e.preventDefault();
-  const btn = f.querySelector('button.btn, button:not([type])'); if (btn) btn.disabled = true;
+  const btn = f.querySelector('button.btn'); if (btn) btn.disabled = true;
   const fd = new FormData(f);
   try {
     const kind = f.dataset.form;
     if (kind === 'login') {
       const { error } = await sb.auth.signInWithPassword({ email: fd.get('email').trim(), password: fd.get('password') });
-      if (error) { toast('Email o contraseña incorrectos', true); return; }
+      if (error) { toast('El email o la contraseña no son correctos', true); return; }
       S.session = (await sb.auth.getSession()).data.session; await loadAll();
     }
     else if (kind === 'setpass') {
@@ -434,7 +631,7 @@ document.addEventListener('submit', async e => {
       const { error } = await sb.from('tickets').insert(row);
       if (error) { toast(error.message, true); return; }
       S.showForm = false; S.formProyecto = ''; await refreshTickets(); render();
-      toast('Solicitud enviada. Te vamos a responder a la brevedad.');
+      toast('Solicitud enviada');
     }
     else if (kind === 'comment') {
       const row = {
@@ -443,7 +640,7 @@ document.addEventListener('submit', async e => {
       };
       const { error } = await sb.from('ticket_comentarios').insert(row);
       if (error) { toast(error.message, true); return; }
-      await loadComentarios(); render();
+      await loadComentarios(); render(); toast('Mensaje enviado');
     }
   } finally { if (btn) btn.disabled = false; }
 });
